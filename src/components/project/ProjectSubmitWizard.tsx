@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useTransition } from "react";
+import { useState, useEffect, useRef, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -8,6 +8,7 @@ import { projectSubmitSchema, type ProjectSubmitInput } from "@/schemas/project"
 import { createProject, updateProject } from "@/server/actions/projects";
 import { CATEGORIES_SEED, TECHNOLOGIES_SEED } from "@/lib/constants";
 import { ProjectCard } from "@/components/project/ProjectCard";
+import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import {
   Rocket,
   Check,
@@ -23,6 +24,7 @@ import {
   DollarSign,
   Eye,
   Globe,
+  ChevronDown,
 } from "lucide-react";
 import { PricingType, ProjectType, Role, Plan, ProjectStatus } from "@prisma/client";
 import { toast } from "sonner";
@@ -49,6 +51,18 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
   const [tagInput, setTagInput] = useState("");
   const [techInput, setTechInput] = useState("");
+  const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
+  const categoryDropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (categoryDropdownRef.current && !categoryDropdownRef.current.contains(event.target as Node)) {
+        setIsCategoryDropdownOpen(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   const {
     register,
@@ -449,20 +463,85 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                 )}
               </div>
 
-              <div>
+              <div ref={categoryDropdownRef}>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
                   Primary Category *
                 </label>
-                <select
-                  {...register("categoryId")}
-                  className="w-full px-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
-                >
-                  {CATEGORIES_SEED.map((cat) => (
-                    <option key={cat.slug} value={cat.slug}>
-                      {cat.name} — {cat.description}
-                    </option>
-                  ))}
-                </select>
+
+                {/* Hidden input to keep react-hook-form registered */}
+                <input type="hidden" {...register("categoryId")} />
+
+                <div className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setIsCategoryDropdownOpen(!isCategoryDropdownOpen)}
+                    className="w-full flex items-center justify-between px-4 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E] text-left transition-colors cursor-pointer"
+                  >
+                    <div className="flex items-center gap-3 min-w-0">
+                      <div className="w-8 h-8 rounded-lg bg-[#E4572E]/10 text-[#E4572E] flex items-center justify-center shrink-0">
+                        <CategoryIcon name={categorySelected.icon} className="w-4 h-4" />
+                      </div>
+                      <div className="min-w-0">
+                        <span className="font-bold text-xs sm:text-sm block truncate text-[#17150F] dark:text-[#FAF9F6]">
+                          {categorySelected.name}
+                        </span>
+                        <span className="text-[11px] text-neutral-500 truncate block">
+                          {categorySelected.description}
+                        </span>
+                      </div>
+                    </div>
+                    <ChevronDown
+                      className={`w-4 h-4 text-neutral-400 transition-transform shrink-0 ml-2 ${
+                        isCategoryDropdownOpen ? "rotate-180" : ""
+                      }`}
+                    />
+                  </button>
+
+                  {isCategoryDropdownOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 p-2 rounded-2xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] shadow-xl z-50 max-h-72 overflow-y-auto space-y-1">
+                      {CATEGORIES_SEED.map((cat) => {
+                        const isSelected = formValues.categoryId === cat.slug;
+                        return (
+                          <button
+                            key={cat.slug}
+                            type="button"
+                            onClick={() => {
+                              setValue("categoryId", cat.slug, { shouldValidate: true });
+                              setIsCategoryDropdownOpen(false);
+                            }}
+                            className={`w-full flex items-center justify-between p-2.5 rounded-xl text-left transition-colors cursor-pointer ${
+                              isSelected
+                                ? "bg-[#E4572E]/10 text-[#E4572E]"
+                                : "hover:bg-neutral-100 dark:hover:bg-neutral-800 text-[#17150F] dark:text-[#FAF9F6]"
+                            }`}
+                          >
+                            <div className="flex items-center gap-3 min-w-0">
+                              <div
+                                className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
+                                  isSelected
+                                    ? "bg-[#E4572E] text-white"
+                                    : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300"
+                                }`}
+                              >
+                                <CategoryIcon name={cat.icon} className="w-4 h-4" />
+                              </div>
+                              <div className="min-w-0">
+                                <span className="font-bold text-xs sm:text-sm block truncate">
+                                  {cat.name}
+                                </span>
+                                <span className="text-[11px] text-neutral-500 truncate block">
+                                  {cat.description}
+                                </span>
+                              </div>
+                            </div>
+                            {isSelected && <Check className="w-4 h-4 text-[#E4572E] shrink-0 ml-2" />}
+                          </button>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+
                 {errors.categoryId && (
                   <p className="mt-1 text-xs text-red-500">{errors.categoryId.message}</p>
                 )}

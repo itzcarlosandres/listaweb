@@ -2,8 +2,34 @@ import { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 import { ProjectStatus } from "@prisma/client";
 
+export const dynamic = "force-dynamic";
+export const revalidate = 3600; // Revalidate hourly so new submissions appear automatically
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || "https://launchhub.dev";
+  // Resolve production base URL dynamically from DB or environment
+  let baseUrl = "https://launchhub.dev";
+  try {
+    const siteSetting = await db.systemSetting.findUnique({
+      where: { key: "SITE_URL" },
+    });
+    if (siteSetting?.value?.trim()) {
+      baseUrl = siteSetting.value.trim();
+    } else if (process.env.NEXT_PUBLIC_APP_URL?.trim()) {
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL.trim();
+    } else if (process.env.NEXTAUTH_URL?.trim()) {
+      baseUrl = process.env.NEXTAUTH_URL.trim();
+    }
+  } catch {
+    if (process.env.NEXT_PUBLIC_APP_URL) {
+      baseUrl = process.env.NEXT_PUBLIC_APP_URL;
+    }
+  }
+
+  // Strip trailing slash and ensure protocol
+  baseUrl = baseUrl.replace(/\/+$/, "");
+  if (!baseUrl.startsWith("http")) {
+    baseUrl = `https://${baseUrl}`;
+  }
 
   // Static core routes
   const staticRoutes: MetadataRoute.Sitemap = [
@@ -64,11 +90,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   ];
 
   try {
-    // Dynamic project routes
+    // Dynamic project routes (all approved and published projects)
     const projects = await db.project.findMany({
       where: { status: ProjectStatus.APPROVED },
       select: { slug: true, updatedAt: true },
-      take: 5000,
+      orderBy: { updatedAt: "desc" },
+      take: 50000,
     });
 
     const projectRoutes: MetadataRoute.Sitemap = projects.map((p) => ({
@@ -106,7 +133,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         },
       },
       select: { username: true, updatedAt: true },
-      take: 1000,
+      take: 10000,
     });
 
     const userRoutes: MetadataRoute.Sitemap = users.map((u) => ({

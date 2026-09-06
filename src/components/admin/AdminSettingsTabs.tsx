@@ -4,26 +4,30 @@ import { useState } from "react";
 import { SeoSettingsForm } from "@/components/admin/SeoSettingsForm";
 import { RankingSettingsForm } from "@/components/admin/RankingSettingsForm";
 import { PaymentGatewaySettingsForm } from "@/components/admin/PaymentGatewaySettingsForm";
-import { Globe, Sliders, CreditCard, Shield, Server, CheckCircle2 } from "lucide-react";
+import { SmtpSettingsForm } from "@/components/admin/SmtpSettingsForm";
+import { Globe, Sliders, CreditCard, Shield, Server, Mail, CheckCircle2 } from "lucide-react";
 import type {
   GeneralSeoSettingsInput,
   RankingSettingsInput,
   PaymentGatewaySettingsInput,
+  SmtpSettingsInput,
 } from "@/server/actions/admin";
 
 interface AdminSettingsTabsProps {
   seoSettings: GeneralSeoSettingsInput;
   rankingSettings: RankingSettingsInput;
   paymentSettings: PaymentGatewaySettingsInput;
+  smtpSettings: SmtpSettingsInput;
 }
 
 export function AdminSettingsTabs({
   seoSettings,
   rankingSettings,
   paymentSettings,
+  smtpSettings,
 }: AdminSettingsTabsProps) {
   const [activeTab, setActiveTab] = useState<
-    "seo" | "ranking" | "payments" | "moderation" | "infrastructure"
+    "seo" | "ranking" | "payments" | "smtp" | "moderation" | "infrastructure"
   >("seo");
 
   const tabs = [
@@ -44,6 +48,12 @@ export function AdminSettingsTabs({
       label: "Pasarelas de Pago",
       icon: CreditCard,
       description: "NOWPayments (Cripto) y Stripe",
+    },
+    {
+      id: "smtp" as const,
+      label: "Servidor SMTP & Correos",
+      icon: Mail,
+      description: "Servidor de correo saliente, credenciales y prueba de entrega",
     },
     {
       id: "moderation" as const,
@@ -101,6 +111,12 @@ export function AdminSettingsTabs({
         {activeTab === "payments" && (
           <div className="space-y-4">
             <PaymentGatewaySettingsForm initialSettings={paymentSettings} />
+          </div>
+        )}
+
+        {activeTab === "smtp" && (
+          <div className="space-y-4">
+            <SmtpSettingsForm initialSettings={smtpSettings} />
           </div>
         )}
 

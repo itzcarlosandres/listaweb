@@ -3,6 +3,7 @@
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import { useState, useRef, useEffect } from "react";
+import { useTheme } from "next-themes";
 import { UserAvatar } from "../shared/UserAvatar";
 import {
   User as UserIcon,
@@ -12,6 +13,8 @@ import {
   ShieldCheck,
   LogOut,
   ChevronDown,
+  Sun,
+  Moon,
 } from "lucide-react";
 import type { SessionUser } from "@/types";
 
@@ -22,6 +25,8 @@ interface UserNavProps {
 export function UserNav({ user }: UserNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const { setTheme, resolvedTheme } = useTheme();
+  const isDark = resolvedTheme === "dark";
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -113,6 +118,20 @@ export function UserNav({ user }: UserNavProps) {
                 Admin Panel
               </Link>
             )}
+
+            <button
+              type="button"
+              onClick={() => setTheme(isDark ? "light" : "dark")}
+              className="w-full flex items-center justify-between px-3 py-2 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors cursor-pointer"
+            >
+              <span className="flex items-center gap-2.5">
+                {isDark ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-neutral-400" />}
+                Theme
+              </span>
+              <span className="text-[10px] font-semibold text-neutral-400 uppercase">
+                {isDark ? "Dark" : "Light"}
+              </span>
+            </button>
           </div>
 
           <div className="pt-1 mt-1 border-t border-[#E7E4DB] dark:border-[#2E2B23]">

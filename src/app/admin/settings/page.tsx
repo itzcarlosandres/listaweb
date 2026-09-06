@@ -4,6 +4,7 @@ import {
   getGeneralSeoSettings,
   getRankingSettings,
   getPaymentGatewaySettings,
+  getSmtpSettings,
 } from "@/server/actions/admin";
 import { AdminSettingsTabs } from "@/components/admin/AdminSettingsTabs";
 
@@ -13,10 +14,11 @@ export default async function AdminSettingsPage() {
     redirect("/forbidden");
   }
 
-  const [seoSettings, rankingSettings, paymentSettings] = await Promise.all([
+  const [seoSettings, rankingSettings, paymentSettings, smtpSettings] = await Promise.all([
     getGeneralSeoSettings(),
     getRankingSettings(),
     getPaymentGatewaySettings(),
+    getSmtpSettings(),
   ]);
 
   return (
@@ -45,6 +47,7 @@ export default async function AdminSettingsPage() {
         seoSettings={seoSettings}
         rankingSettings={rankingSettings}
         paymentSettings={paymentSettings}
+        smtpSettings={smtpSettings}
       />
     </div>
   );

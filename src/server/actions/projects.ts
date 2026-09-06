@@ -9,6 +9,8 @@ import { createId } from "@paralleldrive/cuid2";
 import { revalidatePath } from "next/cache";
 import type { ActionResponse } from "@/types";
 import { ProjectStatus } from "@prisma/client";
+import { sendEmail } from "@/lib/email";
+import { renderProjectSubmittedEmail } from "@/lib/email-templates";
 
 export async function createProject(
   input: ProjectSubmitInput
@@ -157,6 +159,27 @@ export async function createProject(
     });
 
     revalidatePath("/dashboard/projects");
+
+    // Enviar confirmación de envío de proyecto (asíncrono y fail-safe)
+    try {
+      if (session?.user?.email) {
+        const siteSetting = await db.systemSetting.findUnique({ where: { key: "SITE_URL" } });
+        const siteUrl = siteSetting?.value || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev";
+        const emailData = renderProjectSubmittedEmail({
+          creatorName: session.user.name || "Creator",
+          projectName: project.name,
+          siteUrl,
+        });
+        sendEmail({
+          to: session.user.email,
+          subject: emailData.subject,
+          html: emailData.html,
+          text: emailData.text,
+        }).catch((err) => console.error("Error sending project submission email:", err));
+      }
+    } catch (emailErr) {
+      console.error("Error preparing project submission email:", emailErr);
+    }
 
     return {
       success: true,

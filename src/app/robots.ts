@@ -1,9 +1,11 @@
 import { MetadataRoute } from "next";
 import { db } from "@/lib/db";
 
+export const dynamic = "force-dynamic";
+
 export default async function robots(): Promise<MetadataRoute.Robots> {
   let allowIndexing = true;
-  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000";
+  let baseUrl = process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev";
 
   try {
     const settings = await db.systemSetting.findMany({

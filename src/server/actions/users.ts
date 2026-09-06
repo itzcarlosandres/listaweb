@@ -9,6 +9,8 @@ import { generateSvgAvatar, getInitials } from "@/lib/utils";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import type { ActionResponse } from "@/types";
+import { sendEmail } from "@/lib/email";
+import { renderWelcomeEmail } from "@/lib/email-templates";
 
 export async function registerUser(input: RegisterInput): Promise<ActionResponse<{ id: string; email: string }>> {
   try {
@@ -69,6 +71,24 @@ export async function registerUser(input: RegisterInput): Promise<ActionResponse
         email: true,
       },
     });
+
+    // Enviar correo de bienvenida (asíncrono y fail-safe)
+    try {
+      const siteSetting = await db.systemSetting.findUnique({ where: { key: "SITE_URL" } });
+      const siteUrl = siteSetting?.value || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev";
+      const emailData = renderWelcomeEmail({
+        name,
+        siteUrl,
+      });
+      sendEmail({
+        to: user.email,
+        subject: emailData.subject,
+        html: emailData.html,
+        text: emailData.text,
+      }).catch((err) => console.error("Error sending welcome email:", err));
+    } catch (emailErr) {
+      console.error("Error preparing welcome email:", emailErr);
+    }
 
     return {
       success: true,

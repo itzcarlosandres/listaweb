@@ -25,7 +25,7 @@ export const metadata: Metadata = {
   title: "LaunchHub — Descubre lo que están construyendo",
   description: "La plataforma SaaS comunitaria para descubrir, votar y publicar startups, proyectos, herramientas y productos digitales.",
   keywords: ["startups", "saas", "proyectos", "product hunt", "lanzamientos", "herramientas ia", "open source"],
-  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev"),
 };
 
 export default function RootLayout({

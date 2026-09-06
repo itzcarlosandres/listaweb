@@ -13,6 +13,8 @@ import {
   AdminActionType,
   FeaturedPlacement,
 } from "@prisma/client";
+import { getSmtpConfig, sendEmail, testSmtpConnection } from "@/lib/email";
+import { renderProjectApprovedEmail } from "@/lib/email-templates";
 
 async function requireAdmin() {
   const session = await auth();
@@ -63,6 +65,32 @@ export async function approveProject(projectId: string): Promise<ActionResponse>
         },
       });
     });
+
+    // Enviar notificación por correo al creador (asíncrono y fail-safe)
+    try {
+      const owner = await db.user.findUnique({
+        where: { id: project.userId },
+        select: { name: true, email: true },
+      });
+      if (owner?.email) {
+        const siteSetting = await db.systemSetting.findUnique({ where: { key: "SITE_URL" } });
+        const siteUrl = siteSetting?.value || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev";
+        const emailData = renderProjectApprovedEmail({
+          creatorName: owner.name || "Creator",
+          projectName: project.name,
+          projectSlug: project.slug,
+          siteUrl,
+        });
+        sendEmail({
+          to: owner.email,
+          subject: emailData.subject,
+          html: emailData.html,
+          text: emailData.text,
+        }).catch((err) => console.error("Error sending project approval email:", err));
+      }
+    } catch (emailErr) {
+      console.error("Error dispatching project approval email:", emailErr);
+    }
 
     revalidatePath("/admin/submissions");
     revalidatePath("/admin/projects");
@@ -769,5 +797,104 @@ export async function updateGeneralSeoSettings(
     return { success: false, error: message };
   }
 }
+
+export interface SmtpSettingsInput {
+  host: string;
+  port: number;
+  user: string;
+  password?: string;
+  secure: boolean;
+  fromName: string;
+  fromEmail: string;
+  enabled: boolean;
+}
+
+export async function getSmtpSettings(): Promise<SmtpSettingsInput> {
+  try {
+    return await getSmtpConfig();
+  } catch (error) {
+    console.error("Error getting SMTP settings:", error);
+    return {
+      host: "",
+      port: 587,
+      user: "",
+      password: "",
+      secure: false,
+      fromName: "LaunchHub",
+      fromEmail: "noreply@launchhub.dev",
+      enabled: false,
+    };
+  }
+}
+
+export async function updateSmtpSettings(input: SmtpSettingsInput): Promise<ActionResponse> {
+  try {
+    const admin = await requireAdmin();
+
+    const pairs: [string, string][] = [
+      ["SMTP_HOST", input.host.trim()],
+      ["SMTP_PORT", String(input.port || 587)],
+      ["SMTP_USER", input.user.trim()],
+      ["SMTP_SECURE", input.secure ? "true" : "false"],
+      ["SMTP_FROM_NAME", input.fromName.trim() || "LaunchHub"],
+      ["SMTP_FROM_EMAIL", input.fromEmail.trim() || "noreply@launchhub.dev"],
+      ["SMTP_ENABLED", input.enabled ? "true" : "false"],
+    ];
+
+    // Solo actualizar contraseña si se proporcionó una nueva
+    if (input.password && input.password.trim().length > 0) {
+      pairs.push(["SMTP_PASSWORD", input.password.trim()]);
+    }
+
+    await db.$transaction(async (tx) => {
+      for (const [key, value] of pairs) {
+        await tx.systemSetting.upsert({
+          where: { key },
+          update: { value },
+          create: { key, value, description: `Configuración Servidor SMTP: ${key}` },
+        });
+      }
+
+      await tx.adminAction.create({
+        data: {
+          adminId: admin.id,
+          action: AdminActionType.EDIT,
+          targetType: "SYSTEM_SETTING",
+          targetId: "SMTP_CONFIG",
+          detail: `Configuración SMTP actualizada (Host: ${input.host}, Puerto: ${input.port}, Remitente: ${input.fromEmail}, Estado: ${
+            input.enabled ? "HABILITADO" : "DESHABILITADO"
+          })`,
+        },
+      });
+    });
+
+    revalidatePath("/admin/settings");
+    return { success: true };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al guardar configuración SMTP";
+    return { success: false, error: message };
+  }
+}
+
+export async function sendTestEmailAction(targetEmail: string): Promise<ActionResponse> {
+  try {
+    await requireAdmin();
+
+    if (!targetEmail || !targetEmail.includes("@")) {
+      return { success: false, error: "Ingresa un correo electrónico de destino válido" };
+    }
+
+    const result = await testSmtpConnection(targetEmail);
+    if (!result.success) {
+      return { success: false, error: result.message };
+    }
+
+    return { success: true };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al enviar correo de prueba";
+    return { success: false, error: message };
+  }
+}
+
 
 

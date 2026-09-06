@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from "next/server";
 import { db } from "@/lib/db";
 import { verifyNowPaymentsIpnSignature } from "@/lib/nowpayments";
 import { PaymentStatus, OrderStatus, ProductKind, Plan, BoostStatus, ProjectStatus } from "@prisma/client";
+import { sendEmail } from "@/lib/email";
+import { renderPaymentReceiptEmail } from "@/lib/email-templates";
 
 export const dynamic = "force-dynamic";
 
@@ -167,6 +169,30 @@ export async function POST(req: NextRequest) {
           });
         }
       });
+
+      // Enviar recibo de pago por correo (asíncrono y fail-safe)
+      try {
+        if (user.email) {
+          const siteSetting = await db.systemSetting.findUnique({ where: { key: "SITE_URL" } });
+          const siteUrl = siteSetting?.value || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev";
+          const emailData = renderPaymentReceiptEmail({
+            userName: user.name || "Customer",
+            productName: product.name,
+            amountCents: payment.amountCents,
+            currency: payment.currency,
+            orderId: orderId || payment.id,
+            siteUrl,
+          });
+          sendEmail({
+            to: user.email,
+            subject: emailData.subject,
+            html: emailData.html,
+            text: emailData.text,
+          }).catch((err) => console.error("Error sending payment receipt email:", err));
+        }
+      } catch (emailErr) {
+        console.error("Error preparing payment receipt email:", emailErr);
+      }
 
       console.log(`[NOWPayments IPN] Beneficios otorgados exitosamente a ${user.email}`);
     } else if (payment_status === "failed" || payment_status === "expired") {
