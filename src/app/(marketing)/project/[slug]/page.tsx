@@ -172,43 +172,25 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
         </div>
 
         {/* Barra de Acciones: Visitar Web, Favorito, Compartir, Reportar */}
-        <div className="pt-6 border-t border-[#E7E4DB] dark:border-[#2E2B23] flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <VisitButton
-              projectId={project.id}
-              websiteUrl={project.websiteUrl}
-              name={project.name}
-            />
-            <FavoriteButton
-              projectId={project.id}
-              initialHasFavorited={project.hasFavorited}
-            />
-            <ShareButton
-              title={project.name}
-              url={project.websiteUrl}
-              tagline={project.tagline}
-            />
-            <ReportModal
-              projectId={project.id}
-              projectName={project.name}
-            />
-          </div>
-
-          {/* Maker link pill */}
-          <Link
-            href={`/user/${project.user.username}`}
-            className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-xl bg-neutral-50 dark:bg-neutral-800/60 border border-[#E7E4DB] dark:border-[#2E2B23] hover:border-[#E4572E] transition-colors"
-          >
-            <UserAvatar src={project.user.image} name={project.user.name} size="sm" />
-            <div className="text-left">
-              <span className="text-[10px] text-neutral-500 uppercase block font-semibold leading-none">
-                Creado por
-              </span>
-              <span className="text-xs font-bold text-[#17150F] dark:text-[#FAF9F6]">
-                {project.user.name || project.user.username}
-              </span>
-            </div>
-          </Link>
+        <div className="pt-6 border-t border-[#E7E4DB] dark:border-[#2E2B23] flex flex-wrap items-center justify-end gap-3">
+          <VisitButton
+            projectId={project.id}
+            websiteUrl={project.websiteUrl}
+            name={project.name}
+          />
+          <FavoriteButton
+            projectId={project.id}
+            initialHasFavorited={project.hasFavorited}
+          />
+          <ShareButton
+            title={project.name}
+            url={project.websiteUrl}
+            tagline={project.tagline}
+          />
+          <ReportModal
+            projectId={project.id}
+            projectName={project.name}
+          />
         </div>
       </div>
 

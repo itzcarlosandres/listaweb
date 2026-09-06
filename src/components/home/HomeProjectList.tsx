@@ -24,7 +24,7 @@ export function HomeProjectList({
             <div>
               <div className="flex items-center gap-2">
                 <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-neutral-900 dark:text-white tracking-tight">
-                  Lanzamientos Destacados & PRO
+                  Lanzamientos Destacados
                 </h2>
                 <span className="px-2 py-0.5 rounded-full text-[10px] font-mono font-bold uppercase bg-[#E4572E]/10 text-[#E4572E] border border-[#E4572E]/20">
                   Prioridad VIP
