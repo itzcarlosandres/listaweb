@@ -14,7 +14,8 @@
     "db:migrate": "prisma migrate dev",
     "db:seed": "prisma db seed",
     "db:push": "prisma db push",
-    "db:clean": "tsx prisma/clean.ts"
+    "db:clean": "tsx prisma/clean.ts",
+    "admin:change": "tsx prisma/change-admin.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
