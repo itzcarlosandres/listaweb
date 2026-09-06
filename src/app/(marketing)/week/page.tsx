@@ -13,13 +13,13 @@ export default async function WeekRankingPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-[#E4572E] uppercase tracking-wider">
           <Calendar className="w-4 h-4" />
-          <span>Top de los Últimos 7 Días</span>
+          <span>Top in the Last 7 Days</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#17150F] dark:text-[#FAF9F6] tracking-tight">
-          Líderes de la Semana
+          Weekly Leaders
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          Los mejores proyectos de la semana clasificados por apoyo de la comunidad.
+          The best projects of the week ranked by community upvotes.
         </p>
 
         <RankingNavTabs />

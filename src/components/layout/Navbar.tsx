@@ -39,7 +39,7 @@ export async function Navbar() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
             >
               <Compass className="w-4 h-4" />
-              Explorar
+              Explore
             </Link>
             <Link
               href="/trending"
@@ -53,20 +53,20 @@ export async function Navbar() {
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
             >
               <Layers className="w-4 h-4" />
-              Categorías
+              Categories
             </Link>
             <Link
               href="/pricing"
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
             >
               <DollarSign className="w-4 h-4" />
-              Precios
+              Pricing
             </Link>
           </nav>
         </div>
 
         {/* Acciones & Auth */}
-        <div className="flex items-center gap-2.5 sm:gap-3">
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0">
           {/* Quick Search ⌘K Modal */}
           <SearchBarModal />
 
@@ -75,10 +75,10 @@ export async function Navbar() {
           {/* CTA Publicar */}
           <Link
             href="/submit"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm shadow-[#E4572E]/25 hover:shadow-md active:scale-95"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm shadow-[#E4572E]/25 hover:shadow-md active:scale-95 whitespace-nowrap shrink-0"
           >
             <Plus className="w-3.5 h-3.5 stroke-[3]" />
-            Publicar Proyecto
+            Submit Project
           </Link>
 
           {/* User Nav o Login */}
@@ -87,9 +87,9 @@ export async function Navbar() {
           ) : (
             <Link
               href="/login"
-              className="px-3.5 py-2 rounded-xl text-xs font-semibold text-neutral-700 dark:text-neutral-200 bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] hover:border-[#E4572E] hover:text-[#E4572E] transition-colors"
+              className="inline-flex items-center justify-center px-3.5 py-2 rounded-xl text-xs font-semibold text-neutral-700 dark:text-neutral-200 bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] hover:border-[#E4572E] hover:text-[#E4572E] transition-colors whitespace-nowrap shrink-0"
             >
-              Iniciar Sesión
+              Sign In
             </Link>
           )}
         </div>

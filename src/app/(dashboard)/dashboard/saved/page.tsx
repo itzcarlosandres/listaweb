@@ -50,13 +50,13 @@ export default async function SavedProjectsPage() {
       <div>
         <div className="flex items-center gap-2 text-xs font-semibold text-amber-500 uppercase tracking-wider mb-1">
           <Bookmark className="w-4 h-4" />
-          <span>Colección Personal</span>
+          <span>Personal Collection</span>
         </div>
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
-          Proyectos Guardados ({projects.length})
+          Saved Projects ({projects.length})
         </h1>
         <p className="text-xs sm:text-sm text-neutral-500">
-          Tus herramientas, aplicaciones y plataformas favoritas almacenadas para acceso rápido.
+          Your favorite tools, apps, and platforms bookmarked for fast access.
         </p>
       </div>
 
@@ -65,9 +65,9 @@ export default async function SavedProjectsPage() {
       ) : (
         <EmptyState
           icon={Bookmark}
-          title="No tienes proyectos guardados"
-          description="Explora proyectos y pulsa en el icono de guardar para añadirlos a tu colección personal."
-          actionText="Explorar Proyectos"
+          title="No saved projects yet"
+          description="Browse projects and click the bookmark icon on any card to save it to your personal collection."
+          actionText="Explore Projects"
           actionHref="/explore"
         />
       )}

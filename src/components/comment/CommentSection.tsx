@@ -59,10 +59,10 @@ export async function CommentSection({
         </div>
         <div>
           <h2 className="font-display font-extrabold text-xl sm:text-2xl text-[#17150F] dark:text-[#FAF9F6]">
-            Discusión y Feedback
+            Community Discussion & Feedback
           </h2>
           <p className="text-xs text-neutral-500">
-            {comments.length} {comments.length === 1 ? "comentario" : "comentarios"} de la comunidad
+            {comments.length} {comments.length === 1 ? "comment" : "comments"} from the community
           </p>
         </div>
       </div>
@@ -70,7 +70,7 @@ export async function CommentSection({
       {/* Formulario para publicar comentario raíz */}
       <div className="p-5 sm:p-6 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] shadow-xs">
         <h3 className="font-display font-bold text-sm text-[#17150F] dark:text-[#FAF9F6] mb-3">
-          Deja tu opinión o haz una pregunta al creador:
+          Leave your feedback or ask a question to the maker:
         </h3>
         <CommentForm projectId={projectId} />
       </div>
@@ -90,7 +90,7 @@ export async function CommentSection({
       ) : (
         <div className="text-center py-10 px-4 rounded-3xl bg-white dark:bg-[#1A1813] border border-dashed border-[#E7E4DB] dark:border-[#2E2B23]">
           <p className="text-xs sm:text-sm text-neutral-500">
-            Aún no hay comentarios. ¡Sé el primero en dejar feedback constructivo para el autor!
+            No comments yet. Be the first to leave constructive feedback for the maker!
           </p>
         </div>
       )}

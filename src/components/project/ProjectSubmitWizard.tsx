@@ -34,10 +34,10 @@ interface ProjectSubmitWizardProps {
 }
 
 const STEPS = [
-  { id: 1, title: "Esenciales", description: "Nombre, enlace y categoría", icon: Layers },
-  { id: 2, title: "Detalles & Media", description: "Logo, capturas y descripción", icon: FileText },
-  { id: 3, title: "Modelo & Datos", description: "Precios y tipo de proyecto", icon: DollarSign },
-  { id: 4, title: "Revisión & Envío", description: "Vista previa y confirmación", icon: Eye },
+  { id: 1, title: "Essentials", description: "Name, link and category", icon: Layers },
+  { id: 2, title: "Details & Media", description: "Logo, screenshots and description", icon: FileText },
+  { id: 3, title: "Model & Data", description: "Pricing and project type", icon: DollarSign },
+  { id: 4, title: "Review & Submit", description: "Live preview and confirmation", icon: Eye },
 ];
 
 export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectSubmitWizardProps) {
@@ -71,7 +71,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
       technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
       pricingType: PricingType.FREE,
       projectType: ProjectType.SAAS,
-      country: "ES",
+      country: "US",
       launchDate: new Date().toISOString().slice(0, 10),
       honeypot: "",
       renderTime,
@@ -93,7 +93,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     }
   })();
 
-  // Autosave de borrador en localStorage (solo si no es edición)
+  // Autosave draft in localStorage (only if creating)
   useEffect(() => {
     if (!isEditing && typeof window !== "undefined") {
       const saved = localStorage.getItem("launchhub_submit_draft");
@@ -109,14 +109,14 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     }
   }, [isEditing, initialData, setValue]);
 
-  // Guardar en cada cambio
+  // Save on every change
   useEffect(() => {
     if (!isEditing && typeof window !== "undefined") {
       localStorage.setItem("launchhub_submit_draft", JSON.stringify(formValues));
     }
   }, [formValues, isEditing]);
 
-  // Subir imagen vía API route
+  // Upload image via API route
   const handleFileUpload = async (file: File, type: "logo" | "screenshot") => {
     if (type === "logo") setIsUploadingLogo(true);
     else setIsUploadingScreenshot(true);
@@ -132,38 +132,38 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
 
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error || "Error al subir imagen");
+        toast.error(data.error || "Failed to upload image");
         return;
       }
 
       if (type === "logo") {
         setValue("logoUrl", data.url);
-        toast.success("Logo subido correctamente");
+        toast.success("Logo uploaded successfully");
       } else {
         const currentScreenshots = formValues.screenshots || [];
         if (currentScreenshots.length >= 6) {
-          toast.error("Máximo 6 capturas de pantalla permitidas");
+          toast.error("Maximum 6 screenshots allowed");
           return;
         }
         setValue("screenshots", [...currentScreenshots, data.url]);
-        toast.success("Captura de pantalla subida");
+        toast.success("Screenshot uploaded");
       }
     } catch {
-      toast.error("Error de conexión al subir la imagen");
+      toast.error("Network error while uploading image");
     } finally {
       if (type === "logo") setIsUploadingLogo(false);
       else setIsUploadingScreenshot(false);
     }
   };
 
-  // Agregar Tag
+  // Add Tag
   const handleAddTag = () => {
     const clean = tagInput.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
     if (!clean) return;
     const currentTags = formValues.tags || [];
     if (currentTags.includes(clean)) return;
     if (currentTags.length >= 8) {
-      toast.error("Máximo 8 etiquetas");
+      toast.error("Maximum 8 tags allowed");
       return;
     }
     setValue("tags", [...currentTags, clean]);
@@ -177,14 +177,14 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     );
   };
 
-  // Agregar Tecnología
+  // Add Technology
   const handleAddTech = (techName?: string) => {
     const val = (techName || techInput).trim();
     if (!val) return;
     const currentTechs = formValues.technologies || [];
     if (currentTechs.includes(val)) return;
     if (currentTechs.length >= 10) {
-      toast.error("Máximo 10 tecnologías");
+      toast.error("Maximum 10 technologies allowed");
       return;
     }
     setValue("technologies", [...currentTechs, val]);
@@ -198,7 +198,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     );
   };
 
-  // Validar antes de avanzar de paso
+  // Validate before step change
   const nextStep = async () => {
     let fieldsToValidate: (keyof ProjectSubmitInput)[] = [];
     if (currentStep === 1) {
@@ -221,7 +221,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     window.scrollTo({ top: 0, behavior: "smooth" });
   };
 
-  // Enviar Formulario
+  // Submit Form
   const onSubmit = async (data: ProjectSubmitInput) => {
     startTransition(async () => {
       data.renderTime = renderTime;
@@ -234,15 +234,15 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
       }
 
       if (!res.success) {
-        toast.error(res.error || "No se pudo guardar el proyecto");
+        toast.error(res.error || "Could not save project");
       } else {
         if (!isEditing && typeof window !== "undefined") {
           localStorage.removeItem("launchhub_submit_draft");
         }
         toast.success(
           isEditing
-            ? "Proyecto actualizado correctamente"
-            : "¡Proyecto enviado para revisión! Un administrador lo verificará antes de publicarse."
+            ? "Project updated successfully"
+            : "Project submitted for review! An administrator will verify it before it goes live."
         );
         router.push("/dashboard/projects");
         router.refresh();
@@ -257,10 +257,10 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
   const previewProject: ProjectWithDetails = {
     id: "preview-id",
     slug: "preview-slug",
-    name: formValues.name || "Nombre de tu Proyecto",
-    tagline: formValues.tagline || "Tagline explicativo de tu proyecto y propuesta de valor",
-    description: formValues.description || "Descripción detallada...",
-    websiteUrl: formValues.websiteUrl || "https://ejemplo.com",
+    name: formValues.name || "Your Project Name",
+    tagline: formValues.tagline || "Tagline explaining your project and value proposition",
+    description: formValues.description || "Detailed description...",
+    websiteUrl: formValues.websiteUrl || "https://example.com",
     logoUrl: formValues.logoUrl,
     screenshots: formValues.screenshots || [],
     categoryId: categorySelected.slug,
@@ -278,8 +278,8 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     updatedAt: new Date(),
     user: {
       id: "preview-user",
-      name: "Tú",
-      username: "tu_usuario",
+      name: "You",
+      username: "your_username",
       role: Role.USER,
       plan: Plan.FREE,
     },
@@ -297,7 +297,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
 
   return (
     <div className="max-w-4xl mx-auto space-y-8">
-      {/* 1. Indicador de Pasos */}
+      {/* 1. Step Indicator */}
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
         {STEPS.map((step) => {
           const isDone = currentStep > step.id;
@@ -339,32 +339,32 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
         })}
       </div>
 
-      {/* 2. Formulario Multi-Paso */}
+      {/* 2. Multi-Step Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-8">
-        {/* Honeypot invisible */}
+        {/* Invisible Honeypot */}
         <input type="text" {...register("honeypot")} className="hidden" tabIndex={-1} />
 
-        {/* PASO 1: ESENCIALES */}
+        {/* STEP 1: ESSENTIALS */}
         {currentStep === 1 && (
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-6 shadow-xs animate-in fade-in duration-200">
             <div className="space-y-1">
               <h2 className="font-display font-extrabold text-xl text-[#17150F] dark:text-[#FAF9F6]">
-                Paso 1: Información Esencial
+                Step 1: Essential Information
               </h2>
               <p className="text-xs sm:text-sm text-neutral-500">
-                Los datos clave para identificar tu proyecto en el catálogo y rankings.
+                Key details to identify your project across directory listings and rankings.
               </p>
             </div>
 
             <div className="space-y-4">
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Nombre del Proyecto *
+                  Project Name *
                 </label>
                 <input
                   {...register("name")}
                   type="text"
-                  placeholder="ej: CloudPanel X"
+                  placeholder="e.g. CloudPanel X"
                   className="w-full px-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                 />
                 {errors.name && (
@@ -375,7 +375,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-                    Tagline o Lema Breve *
+                    Tagline or Short Pitch *
                   </label>
                   <span className="text-[11px] font-mono text-neutral-400">
                     {(formValues.tagline || "").length} / 90
@@ -385,7 +385,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   {...register("tagline")}
                   type="text"
                   maxLength={90}
-                  placeholder="ej: Panel de control moderno para servidores PHP y bases de datos"
+                  placeholder="e.g. Modern server management panel for cloud infrastructure"
                   className="w-full px-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                 />
                 {errors.tagline && (
@@ -396,12 +396,12 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-                    URL del Sitio Web o App *
+                    Website or App URL *
                   </label>
                   {faviconUrl && (
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-medium text-emerald-600 dark:text-emerald-400">
                       <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
-                      Favicon detectado
+                      Favicon detected
                     </span>
                   )}
                 </div>
@@ -425,7 +425,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   <input
                     {...register("websiteUrl")}
                     type="url"
-                    placeholder="https://tuproyecto.com"
+                    placeholder="https://yourproject.com"
                     className="w-full pl-12 pr-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                   />
                 </div>
@@ -435,12 +435,12 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                     type="button"
                     onClick={() => {
                       setValue("logoUrl", faviconUrl);
-                      toast.success("Favicon asignado como logo del proyecto");
+                      toast.success("Favicon set as project logo");
                     }}
                     className="mt-2 inline-flex items-center gap-1.5 text-xs text-primary hover:underline font-medium"
                   >
                     <Sparkles className="w-3.5 h-3.5" />
-                    ¿Quieres usar este favicon como logo del proyecto?
+                    Do you want to use this favicon as your project logo?
                   </button>
                 )}
 
@@ -451,7 +451,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
 
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Categoría Principal *
+                  Primary Category *
                 </label>
                 <select
                   {...register("categoryId")}
@@ -471,15 +471,15 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
           </div>
         )}
 
-        {/* PASO 2: DETALLES Y MEDIA */}
+        {/* STEP 2: DETAILS AND MEDIA */}
         {currentStep === 2 && (
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-6 shadow-xs animate-in fade-in duration-200">
             <div className="space-y-1">
               <h2 className="font-display font-extrabold text-xl text-[#17150F] dark:text-[#FAF9F6]">
-                Paso 2: Detalles, Imágenes y Descripción
+                Step 2: Details, Images & Description
               </h2>
               <p className="text-xs sm:text-sm text-neutral-500">
-                Agrega recursos visuales y explica qué hace único a tu proyecto.
+                Add visual assets and tell makers what makes your product unique.
               </p>
             </div>
 
@@ -487,7 +487,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               {/* Logo Upload */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-2">
-                  Logo o Icono del Proyecto (PNG, JPG, SVG o WebP, máx 2MB)
+                  Project Logo or Icon (PNG, JPG, SVG or WebP, max 2MB)
                 </label>
                 <div className="flex items-center gap-4">
                   {formValues.logoUrl ? (
@@ -526,20 +526,20 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   )}
                   <div className="space-y-1.5">
                     <p className="text-xs text-neutral-500">
-                      Sube una imagen cuadrada de alta resolución para que tu proyecto destaque en las cards.
+                      Upload a square, high-resolution image so your project looks sharp on discovery cards.
                     </p>
                     {faviconUrl && !formValues.logoUrl && (
                       <button
                         type="button"
                         onClick={() => {
                           setValue("logoUrl", faviconUrl);
-                          toast.success("Favicon asignado como logo");
+                          toast.success("Favicon set as logo");
                         }}
                         className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-800 dark:text-neutral-200 border border-[#E7E4DB] dark:border-[#2E2B23] transition-colors"
                       >
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={faviconUrl} alt="Favicon" className="w-4 h-4 object-contain" />
-                        Usar favicon detectado automáticamente
+                        Use automatically detected favicon
                       </button>
                     )}
                   </div>
@@ -549,7 +549,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               {/* Screenshots Upload */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-2">
-                  Capturas de Pantalla (Hasta 6 imágenes, máx 5MB c/u)
+                  Screenshots (Up to 6 images, max 5MB each)
                 </label>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
                   {(formValues.screenshots || []).map((img, idx) => (
@@ -558,7 +558,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                       className="relative aspect-video rounded-xl overflow-hidden border border-[#E7E4DB] dark:border-[#2E2B23] bg-neutral-100 dark:bg-neutral-800"
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={img} alt={`Captura ${idx + 1}`} className="w-full h-full object-cover" />
+                      <img src={img} alt={`Screenshot ${idx + 1}`} className="w-full h-full object-cover" />
                       <button
                         type="button"
                         onClick={() =>
@@ -581,7 +581,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                       ) : (
                         <>
                           <ImageIcon className="w-5 h-5 mb-1" />
-                          <span className="text-[11px] font-semibold">Subir Captura</span>
+                          <span className="text-[11px] font-semibold">Upload Screenshot</span>
                         </>
                       )}
                       <input
@@ -598,11 +598,11 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                 </div>
               </div>
 
-              {/* Descripción */}
+              {/* Description */}
               <div>
                 <div className="flex items-center justify-between mb-1.5">
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-                    Descripción Completa * (mínimo 120 caracteres)
+                    Full Description * (minimum 120 characters)
                   </label>
                   <span className="text-[11px] font-mono text-neutral-400">
                     {(formValues.description || "").length} / 8000
@@ -611,7 +611,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                 <textarea
                   {...register("description")}
                   rows={6}
-                  placeholder="Describe detalladamente qué problema resuelve tu proyecto, principales características, ventajas competitivas y cómo empezar a usarlo..."
+                  placeholder="Describe in detail what problem your project solves, key features, competitive advantages, and how to get started..."
                   className="w-full p-4 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E] resize-y"
                 />
                 {errors.description && (
@@ -622,7 +622,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               {/* Tags Chips Input */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Etiquetas (Máx 8)
+                  Tags (Max 8)
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
@@ -635,7 +635,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                         handleAddTag();
                       }
                     }}
-                    placeholder="ej: automatizacion"
+                    placeholder="e.g. automation"
                     className="flex-1 px-4 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6]"
                   />
                   <button
@@ -643,7 +643,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                     onClick={handleAddTag}
                     className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
                   >
-                    Añadir Tag
+                    Add Tag
                   </button>
                 </div>
                 <div className="flex flex-wrap gap-1.5">
@@ -665,10 +665,10 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                 </div>
               </div>
 
-              {/* Tecnologías Input */}
+              {/* Technologies Input */}
               <div>
                 <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Tecnologías y Stack (Máx 10)
+                  Technologies & Tech Stack (Max 10)
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
@@ -681,7 +681,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                         handleAddTech();
                       }
                     }}
-                    placeholder="ej: PostgreSQL"
+                    placeholder="e.g. PostgreSQL"
                     className="flex-1 px-4 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6]"
                   />
                   <button
@@ -689,7 +689,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                     onClick={() => handleAddTech()}
                     className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
                   >
-                    Añadir
+                    Add
                   </button>
                 </div>
 
@@ -711,9 +711,9 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   ))}
                 </div>
 
-                {/* Sugerencias populares */}
+                {/* Popular suggestions */}
                 <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                  <span className="text-[11px] text-neutral-400">Sugerencias:</span>
+                  <span className="text-[11px] text-neutral-400">Suggestions:</span>
                   {TECHNOLOGIES_SEED.slice(0, 8).map((t) => (
                     <button
                       key={t}
@@ -730,15 +730,15 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
           </div>
         )}
 
-        {/* PASO 3: PRECIOS Y METADATOS */}
+        {/* STEP 3: PRICING AND METADATA */}
         {currentStep === 3 && (
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-6 shadow-xs animate-in fade-in duration-200">
             <div className="space-y-1">
               <h2 className="font-display font-extrabold text-xl text-[#17150F] dark:text-[#FAF9F6]">
-                Paso 3: Modelo de Precios y Clasificación
+                Step 3: Pricing Model & Classification
               </h2>
               <p className="text-xs sm:text-sm text-neutral-500">
-                Ayuda a los usuarios a saber qué esperar de tu producto.
+                Help visitors understand your project model and access tiers.
               </p>
             </div>
 
@@ -746,37 +746,37 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                    Modelo de Precios *
+                    Pricing Model *
                   </label>
                   <select
                     {...register("pricingType")}
                     className="w-full px-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                   >
-                    <option value={PricingType.FREE}>Gratis (Free)</option>
-                    <option value={PricingType.FREEMIUM}>Freemium (Funciones gratis + Pro)</option>
-                    <option value={PricingType.PAID}>De Pago (Paid / Suscripción)</option>
-                    <option value={PricingType.OPEN_SOURCE}>Open Source (Código Abierto)</option>
+                    <option value={PricingType.FREE}>Free</option>
+                    <option value={PricingType.FREEMIUM}>Freemium (Free tier + Pro plans)</option>
+                    <option value={PricingType.PAID}>Paid (Paid / Subscription only)</option>
+                    <option value={PricingType.OPEN_SOURCE}>Open Source</option>
                   </select>
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                    Tipo de Proyecto *
+                    Project Type *
                   </label>
                   <select
                     {...register("projectType")}
                     className="w-full px-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                   >
                     <option value={ProjectType.SAAS}>SaaS</option>
-                    <option value={ProjectType.AI}>Inteligencia Artificial</option>
-                    <option value={ProjectType.WEBSITE}>Sitio Web</option>
-                    <option value={ProjectType.WEB_APP}>Aplicación Web</option>
-                    <option value={ProjectType.MOBILE_APP}>App Móvil</option>
-                    <option value={ProjectType.TOOL}>Herramienta / Utilidad</option>
+                    <option value={ProjectType.AI}>Artificial Intelligence</option>
+                    <option value={ProjectType.WEBSITE}>Website</option>
+                    <option value={ProjectType.WEB_APP}>Web Application</option>
+                    <option value={ProjectType.MOBILE_APP}>Mobile App</option>
+                    <option value={ProjectType.TOOL}>Developer Tool / Utility</option>
                     <option value={ProjectType.ECOMMERCE}>E-commerce</option>
                     <option value={ProjectType.OPEN_SOURCE}>Open Source</option>
                     <option value={ProjectType.STARTUP}>Startup</option>
-                    <option value={ProjectType.OTHER}>Otro</option>
+                    <option value={ProjectType.OTHER}>Other</option>
                   </select>
                 </div>
               </div>
@@ -784,20 +784,20 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                    País de Origen (Código ISO 2 letras, ej: ES, MX, US)
+                    Country of Origin (2-letter ISO code, e.g. US, GB, ES)
                   </label>
                   <input
                     {...register("country")}
                     type="text"
                     maxLength={2}
-                    placeholder="ES"
+                    placeholder="US"
                     className="w-full px-4 py-3 rounded-xl text-sm uppercase bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                   />
                 </div>
 
                 <div>
                   <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                    Fecha de Lanzamiento
+                    Launch Date
                   </label>
                   <input
                     {...register("launchDate")}
@@ -810,19 +810,19 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
           </div>
         )}
 
-        {/* PASO 4: REVISIÓN Y PREVIEW EN VIVO */}
+        {/* STEP 4: LIVE REVIEW AND SUBMISSION */}
         {currentStep === 4 && (
           <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-8 shadow-xs animate-in fade-in duration-200">
             <div className="space-y-1">
               <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E4572E]/10 text-[#E4572E]">
                 <Sparkles className="w-3.5 h-3.5" />
-                Previsualización en Vivo
+                Live Preview
               </span>
               <h2 className="font-display font-extrabold text-2xl text-[#17150F] dark:text-[#FAF9F6]">
-                Así se verá tu proyecto en LaunchHub
+                Here is how your project will look on LaunchHub
               </h2>
               <p className="text-xs sm:text-sm text-neutral-500">
-                Revisa cómo aparecerá tu tarjeta en la portada y directorios antes de enviar.
+                Review how your card will appear across homepages and directories before submitting.
               </p>
             </div>
 
@@ -831,37 +831,37 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               <ProjectCard project={previewProject} />
             </div>
 
-            {/* Resumen de Datos */}
+            {/* Data Summary */}
             <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-2 text-xs">
               <div className="flex justify-between py-1 border-b border-[#E7E4DB]/60 dark:border-[#2E2B23]/60">
-                <span className="text-neutral-500">Enlace oficial:</span>
+                <span className="text-neutral-500">Official website:</span>
                 <span className="font-mono text-neutral-700 dark:text-neutral-300 font-semibold truncate max-w-xs">
                   {formValues.websiteUrl}
                 </span>
               </div>
               <div className="flex justify-between py-1 border-b border-[#E7E4DB]/60 dark:border-[#2E2B23]/60">
-                <span className="text-neutral-500">Categoría:</span>
+                <span className="text-neutral-500">Category:</span>
                 <span className="font-semibold text-neutral-700 dark:text-neutral-300">{categorySelected.name}</span>
               </div>
               <div className="flex justify-between py-1">
-                <span className="text-neutral-500">Estado inicial tras envío:</span>
-                <span className="font-semibold text-amber-600 dark:text-amber-400">Pendiente de Aprobación</span>
+                <span className="text-neutral-500">Initial status after submit:</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">Pending Approval</span>
               </div>
             </div>
 
             <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-xs text-emerald-900 dark:text-emerald-300 space-y-1">
               <div className="flex items-center gap-1.5 font-bold">
                 <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>Publicación 100% Gratuita (Sin Cobros)</span>
+                <span>100% Free Submission (No Charges)</span>
               </div>
               <p className="text-emerald-800/90 dark:text-emerald-300/90 leading-relaxed">
-                No se requiere ningún pago. Tu proyecto entrará a la cola de moderación en estado <strong>Pendiente de Aprobación</strong> y será verificado por el equipo antes de hacerse visible públicamente en LaunchHub.
+                No payment or credit card required. Your project enters the moderation queue with <strong>Pending Approval</strong> status and will be verified by our team before going live publicly on LaunchHub.
               </p>
             </div>
           </div>
         )}
 
-        {/* 3. Botones de Navegación del Wizard */}
+        {/* 3. Wizard Navigation Buttons */}
         <div className="flex items-center justify-between gap-4 pt-4">
           {currentStep > 1 ? (
             <button
@@ -870,7 +870,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors cursor-pointer"
             >
               <ArrowLeft className="w-4 h-4" />
-              Paso Anterior
+              Previous Step
             </button>
           ) : (
             <div />
@@ -882,7 +882,7 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               onClick={nextStep}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-md shadow-[#E4572E]/20 cursor-pointer"
             >
-              Siguiente Paso
+              Next Step
               <ArrowRight className="w-4 h-4" />
             </button>
           ) : (
@@ -894,12 +894,12 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {isEditing ? "Actualizando..." : "Publicando..."}
+                  {isEditing ? "Updating..." : "Publishing..."}
                 </>
               ) : (
                 <>
                   <Rocket className="w-4 h-4" />
-                  {isEditing ? "Guardar Cambios" : "Confirmar y Publicar Gratis"}
+                  {isEditing ? "Save Changes" : "Confirm & Submit for Free"}
                 </>
               )}
             </button>

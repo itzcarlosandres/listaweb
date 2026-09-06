@@ -36,12 +36,12 @@ export function RegisterForm() {
       const res = await registerUser(data);
 
       if (!res.success) {
-        toast.error(res.error || "No se pudo completar el registro");
+        toast.error(res.error || "Could not complete registration");
         setIsLoading(false);
         return;
       }
 
-      toast.success("¡Cuenta creada exitosamente! Iniciando sesión...");
+      toast.success("Account created successfully! Signing in...");
 
       // Autologin
       const signInRes = await signIn("credentials", {
@@ -58,7 +58,7 @@ export function RegisterForm() {
       router.push("/dashboard");
       router.refresh();
     } catch {
-      toast.error("Error de conexión al registrar. Inténtalo nuevamente.");
+      toast.error("Network error during registration. Please try again.");
       setIsLoading(false);
     }
   };
@@ -68,7 +68,7 @@ export function RegisterForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-            Nombre Completo
+            Full Name
           </label>
           <div className="relative">
             <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -86,7 +86,7 @@ export function RegisterForm() {
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-            Usuario
+            Username
           </label>
           <div className="relative">
             <AtSign className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -105,14 +105,14 @@ export function RegisterForm() {
 
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-          Correo Electrónico
+          Email Address
         </label>
         <div className="relative">
           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             {...register("email")}
             type="email"
-            placeholder="tu@email.com"
+            placeholder="you@email.com"
             autoComplete="email"
             className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#E4572E]/20 focus:border-[#E4572E] transition-all"
           />
@@ -125,7 +125,7 @@ export function RegisterForm() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-            Contraseña
+            Password
           </label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -144,7 +144,7 @@ export function RegisterForm() {
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-            Confirmar
+            Confirm Password
           </label>
           <div className="relative">
             <Lock className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -170,22 +170,15 @@ export function RegisterForm() {
         {isLoading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Creando tu cuenta...
+            Creating your account...
           </>
         ) : (
           <>
-            Crear Cuenta Gratis
+            Create Free Account
             <ArrowRight className="w-4 h-4" />
           </>
         )}
       </button>
-
-      <div className="pt-2 text-center text-xs text-neutral-600 dark:text-neutral-400">
-        ¿Ya tienes una cuenta?{" "}
-        <Link href="/login" className="font-semibold text-[#E4572E] hover:underline">
-          Inicia sesión
-        </Link>
-      </div>
     </form>
   );
 }

@@ -23,17 +23,17 @@ export function DashboardNav({ role, unreadNotificationsCount = 0 }: DashboardNa
   const pathname = usePathname();
 
   const links = [
-    { href: "/dashboard", label: "Resumen", icon: LayoutDashboard, exact: true },
-    { href: "/dashboard/projects", label: "Mis Proyectos", icon: FolderGit2 },
-    { href: "/dashboard/analytics", label: "Analítica", icon: BarChart3 },
-    { href: "/dashboard/saved", label: "Guardados", icon: Bookmark },
+    { href: "/dashboard", label: "Overview", icon: LayoutDashboard, exact: true },
+    { href: "/dashboard/projects", label: "My Projects", icon: FolderGit2 },
+    { href: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+    { href: "/dashboard/saved", label: "Saved", icon: Bookmark },
     {
       href: "/dashboard/notifications",
-      label: "Notificaciones",
+      label: "Notifications",
       icon: Bell,
       badge: unreadNotificationsCount > 0 ? unreadNotificationsCount : undefined,
     },
-    { href: "/dashboard/settings", label: "Ajustes", icon: Settings },
+    { href: "/dashboard/settings", label: "Settings", icon: Settings },
   ];
 
   return (
@@ -75,7 +75,7 @@ export function DashboardNav({ role, unreadNotificationsCount = 0 }: DashboardNa
                 className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold text-purple-600 dark:text-purple-400 hover:bg-purple-50 dark:hover:bg-purple-950/30 transition-colors shrink-0"
               >
                 <ShieldCheck className="w-4 h-4" />
-                <span>Panel Admin</span>
+                <span>Admin Panel</span>
               </Link>
             )}
           </nav>
@@ -87,7 +87,7 @@ export function DashboardNav({ role, unreadNotificationsCount = 0 }: DashboardNa
               className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-xs"
             >
               <Plus className="w-3.5 h-3.5 stroke-[3]" />
-              Nuevo Proyecto
+              New Project
             </Link>
           </div>
         </div>

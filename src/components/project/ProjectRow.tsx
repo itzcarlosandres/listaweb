@@ -90,7 +90,7 @@ export function ProjectRow({ project, rankIndex, highlightPromoted = true }: Pro
             {!isBoosted && !isProMaker && isFeatured && (
               <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md text-[10px] font-mono font-bold uppercase tracking-wider bg-amber-500 text-white shadow-2xs">
                 <Sparkles className="w-2.5 h-2.5" />
-                Destacado
+                Featured
               </span>
             )}
 
@@ -115,11 +115,11 @@ export function ProjectRow({ project, rankIndex, highlightPromoted = true }: Pro
       {/* Acciones & Voto */}
       <div className="flex items-center gap-2 sm:gap-3 shrink-0">
         <div className="hidden sm:flex items-center gap-2.5 text-xs text-neutral-400 font-mono pr-2">
-          <span className="flex items-center gap-1" title="Comentarios">
+          <span className="flex items-center gap-1" title="Comments">
             <MessageSquare className="w-3.5 h-3.5" />
             {project.commentsCount}
           </span>
-          <span className="flex items-center gap-1" title="Visitas">
+          <span className="flex items-center gap-1" title="Views">
             <Eye className="w-3.5 h-3.5" />
             {project.viewsCount}
           </span>

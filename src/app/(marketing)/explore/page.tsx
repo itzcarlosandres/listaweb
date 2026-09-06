@@ -40,13 +40,13 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold text-[#E4572E] uppercase tracking-wider">
           <Compass className="w-4 h-4" />
-          <span>Directorio y Catálogo</span>
+          <span>Directory & Catalog</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#17150F] dark:text-[#FAF9F6] tracking-tight">
-          Explorar Proyectos y Startups
+          Explore Projects & Startups
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          Filtra entre {totalCount} proyectos disponibles por categoría, modelo de precios, tecnologías o popularidad.
+          Filter through {totalCount} projects by category, pricing model, tech stack, or popularity.
         </p>
       </div>
 
@@ -57,10 +57,10 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
 
       {/* Results Count & Badges */}
       <div className="flex items-center justify-between text-xs text-neutral-500 pt-2 font-mono">
-        <span>Mostrando {items.length} de {totalCount} resultados</span>
+        <span>Showing {items.length} of {totalCount} results</span>
         {params.tag && (
           <span className="px-2 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300">
-            Filtro Tag: #{params.tag}
+            Tag Filter: #{params.tag}
           </span>
         )}
       </div>
@@ -70,9 +70,9 @@ export default async function ExplorePage({ searchParams }: ExplorePageProps) {
         <ProjectGrid projects={items} />
       ) : (
         <EmptyState
-          title="No se encontraron proyectos"
-          description="Intenta cambiar los términos de búsqueda o limpiar los filtros seleccionados para encontrar más resultados."
-          actionText="Publicar un Proyecto"
+          title="No projects found"
+          description="Try changing your search terms or clearing your filters to discover more projects."
+          actionText="Submit a Project"
           actionHref="/submit"
         />
       )}

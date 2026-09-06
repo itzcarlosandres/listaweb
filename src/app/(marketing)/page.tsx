@@ -42,21 +42,21 @@ export default async function HomePage() {
             {/* Tag pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#E4572E]/10 text-[#E4572E] border border-[#E4572E]/20">
               <Sparkles className="w-3.5 h-3.5" />
-              <span>La plataforma definitiva de lanzamientos en español</span>
+              <span>The premier launch platform for tech products</span>
             </div>
 
             {/* H1 Principal */}
             <h1 className="font-heading font-extrabold text-4xl sm:text-6xl lg:text-7xl tracking-tight text-neutral-900 dark:text-white leading-[1.08]">
-              Descubre lo que están{" "}
+              Discover what builders are{" "}
               <span className="text-[#E4572E] underline decoration-[#E4572E]/30 decoration-wavy underline-offset-8">
-                construyendo
+                launching
               </span>
               .
             </h1>
 
             {/* Subtítulo */}
             <p className="text-base sm:text-xl text-neutral-600 dark:text-neutral-400 font-normal leading-relaxed max-w-2xl mx-auto">
-              Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores de todo el mundo.
+              Explore daily newly launched AI tools, SaaS products, developer apps, and startups built by founders worldwide.
             </p>
 
             {/* CTAs */}
@@ -66,14 +66,14 @@ export default async function HomePage() {
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-neutral-900 text-white dark:bg-white dark:text-neutral-900 hover:opacity-90 transition-all shadow-md active:scale-95"
               >
                 <Compass className="w-4 h-4" />
-                Explorar proyectos
+                Explore projects
               </Link>
               <Link
                 href="/submit"
                 className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-7 py-3.5 rounded-xl font-bold text-sm bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-md shadow-[#E4572E]/25 active:scale-95"
               >
                 <Plus className="w-4 h-4 stroke-[3]" />
-                Publicar mi proyecto
+                Submit my project
               </Link>
             </div>
           </div>
@@ -111,17 +111,17 @@ export default async function HomePage() {
                   <Zap className="w-4 h-4 fill-current" />
                 </div>
                 <h3 className="font-heading font-bold text-sm text-neutral-900 dark:text-white">
-                  Posicionamiento Exclusivo LaunchHub
+                  Exclusive LaunchHub Promotion
                 </h3>
               </div>
               <p className="text-xs text-neutral-500 leading-relaxed">
-                Los proyectos con Boost y los miembros PRO aparecen en los primeros lugares de la lista principal, obtienen insignias doradas e impulsan su tráfico orgánico hasta 5x.
+                Boosted launches and PRO members claim top spots on the homepage, unlock golden badges, and amplify organic traction by up to 5x.
               </p>
               <Link
                 href="/pricing"
                 className="inline-flex items-center justify-between w-full px-4 py-2.5 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-xs"
               >
-                <span>Conoce los Planes y Boosts</span>
+                <span>Explore Plans & Boosts</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -138,13 +138,13 @@ export default async function HomePage() {
           <div className="relative z-10 max-w-2xl space-y-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E4572E]/20 text-[#E4572E] border border-[#E4572E]/30">
               <Sparkles className="w-3.5 h-3.5" />
-              Publicación Gratuita
+              Free Launch
             </span>
             <h2 className="font-heading font-extrabold text-2xl sm:text-4xl tracking-tight text-white">
-              ¿Has construido una app, SaaS o herramienta?
+              Have you built an app, SaaS or tool?
             </h2>
             <p className="text-sm sm:text-base text-neutral-300 leading-relaxed">
-              Publica tu proyecto en minutos, consigue tus primeros usuarios y feedback real sin gastar un solo centavo.
+              Launch your project in minutes, reach your first early users, and get real feedback without spending a dime.
             </p>
             <div className="pt-2">
               <Link
@@ -152,7 +152,7 @@ export default async function HomePage() {
                 className="inline-flex items-center gap-2 px-6 py-3.5 rounded-xl font-bold text-sm bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-lg shadow-[#E4572E]/30 active:scale-95"
               >
                 <Rocket className="w-4 h-4" />
-                Publicar Proyecto Ahora
+                Launch Project Now
               </Link>
             </div>
           </div>
@@ -168,10 +168,10 @@ export default async function HomePage() {
             </div>
             <div>
               <h2 className="font-heading font-extrabold text-xl sm:text-2xl text-neutral-900 dark:text-white">
-                Explorar por Categoría
+                Browse by Category
               </h2>
               <p className="text-xs text-neutral-500">
-                Encuentra exactamente las herramientas que necesitas para tu stack
+                Find the exact tools you need for your tech stack and workflow
               </p>
             </div>
           </div>
@@ -180,7 +180,7 @@ export default async function HomePage() {
             href="/categories"
             className="text-xs font-bold text-[#E4572E] hover:underline inline-flex items-center gap-1"
           >
-            Ver todas las categorías
+            View all categories
             <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -201,7 +201,7 @@ export default async function HomePage() {
                     {category.name}
                   </h3>
                   <span className="text-[11px] font-mono text-neutral-400">
-                    {category._count.projects} proyectos
+                    {category._count.projects} projects
                   </span>
                 </div>
               </div>

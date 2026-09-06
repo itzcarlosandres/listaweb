@@ -22,7 +22,7 @@ export function CommentForm({
   parentAuthorName,
   onSuccess,
   onCancel,
-  placeholder = "Escribe tu opinión, pregunta o feedback sobre este proyecto...",
+  placeholder = "Write your thoughts, questions, or feedback about this project...",
 }: CommentFormProps) {
   const { data: session } = useSession();
   const router = useRouter();
@@ -33,13 +33,13 @@ export function CommentForm({
     e.preventDefault();
 
     if (!session?.user) {
-      toast.info("Inicia sesión para poder comentar");
+      toast.info("Please sign in to leave a comment");
       router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
 
     if (body.trim().length < 3) {
-      toast.error("El comentario debe tener al menos 3 caracteres");
+      toast.error("Comment must be at least 3 characters long");
       return;
     }
 
@@ -51,9 +51,9 @@ export function CommentForm({
       });
 
       if (!res.success) {
-        toast.error(res.error || "No se pudo publicar el comentario");
+        toast.error(res.error || "Could not post comment");
       } else {
-        toast.success("¡Comentario publicado!");
+        toast.success("Comment published!");
         setBody("");
         if (onSuccess) onSuccess();
       }
@@ -65,7 +65,7 @@ export function CommentForm({
       {parentAuthorName && (
         <div className="flex items-center justify-between text-xs text-neutral-500 bg-neutral-100 dark:bg-neutral-800 px-3 py-1.5 rounded-lg">
           <span>
-            Respondiendo a <strong>@{parentAuthorName}</strong>
+            Replying to <strong>@{parentAuthorName}</strong>
           </span>
           {onCancel && (
             <button
@@ -92,7 +92,7 @@ export function CommentForm({
 
       <div className="flex items-center justify-between">
         <span className="text-[11px] font-mono text-neutral-400">
-          {body.length} / 2000 caracteres
+          {body.length} / 2000 characters
         </span>
 
         <div className="flex items-center gap-2">
@@ -102,7 +102,7 @@ export function CommentForm({
               onClick={onCancel}
               className="px-3 py-1.5 rounded-xl text-xs font-semibold text-neutral-500 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
-              Cancelar
+              Cancel
             </button>
           )}
 
@@ -114,12 +114,12 @@ export function CommentForm({
             {isPending ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Publicando...
+                Posting...
               </>
             ) : (
               <>
                 <Send className="w-3.5 h-3.5" />
-                {parentId ? "Responder" : "Publicar Comentario"}
+                {parentId ? "Reply" : "Post Comment"}
               </>
             )}
           </button>

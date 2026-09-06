@@ -21,10 +21,10 @@ export function HomeLeaderboard({ projects }: HomeLeaderboardProps) {
           </div>
           <div>
             <h2 className="font-display font-extrabold text-lg sm:text-xl text-[#17150F] dark:text-[#FAF9F6]">
-              Leaderboard en Vivo de Hoy
+              Today's Live Leaderboard
             </h2>
             <p className="text-xs text-neutral-500">
-              Los proyectos con mayor impacto y tracción en las últimas 24 horas
+              Top launches gaining the most community traction in the past 24 hours
             </p>
           </div>
         </div>
@@ -33,7 +33,7 @@ export function HomeLeaderboard({ projects }: HomeLeaderboardProps) {
           href="/today"
           className="hidden sm:inline-flex items-center gap-1.5 text-xs font-bold text-[#E4572E] hover:underline"
         >
-          Ver todos
+          View all
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>

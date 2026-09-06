@@ -73,7 +73,7 @@ export function UserNav({ user }: UserNavProps) {
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <UserIcon className="w-4 h-4 text-neutral-400" />
-              Mi Perfil Público
+              Public Profile
             </Link>
 
             <Link
@@ -82,7 +82,7 @@ export function UserNav({ user }: UserNavProps) {
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <LayoutDashboard className="w-4 h-4 text-neutral-400" />
-              Panel de Control
+              Dashboard
             </Link>
 
             <Link
@@ -91,7 +91,7 @@ export function UserNav({ user }: UserNavProps) {
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <FolderGit2 className="w-4 h-4 text-neutral-400" />
-              Mis Proyectos
+              My Projects
             </Link>
 
             <Link
@@ -100,7 +100,7 @@ export function UserNav({ user }: UserNavProps) {
               className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-neutral-700 dark:text-neutral-300 hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors"
             >
               <Bell className="w-4 h-4 text-neutral-400" />
-              Notificaciones
+              Notifications
             </Link>
 
             {user.role === "ADMIN" && (
@@ -110,7 +110,7 @@ export function UserNav({ user }: UserNavProps) {
                 className="flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-semibold text-purple-600 dark:text-purple-400 bg-purple-50 dark:bg-purple-950/40 hover:bg-purple-100 dark:hover:bg-purple-900/40 transition-colors"
               >
                 <ShieldCheck className="w-4 h-4" />
-                Panel Admin
+                Admin Panel
               </Link>
             )}
           </div>
@@ -121,7 +121,7 @@ export function UserNav({ user }: UserNavProps) {
               className="w-full flex items-center gap-2.5 px-3 py-2 rounded-xl text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors cursor-pointer"
             >
               <LogOut className="w-4 h-4" />
-              Cerrar Sesión
+              Sign Out
             </button>
           </div>
         </div>

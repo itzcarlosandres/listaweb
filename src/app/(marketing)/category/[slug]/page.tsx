@@ -17,11 +17,11 @@ interface CategoryPageProps {
 export async function generateMetadata({ params }: CategoryPageProps): Promise<Metadata> {
   const { slug } = await params;
   const category = await db.category.findUnique({ where: { slug } });
-  if (!category) return { title: "Categoría no encontrada | LaunchHub" };
+  if (!category) return { title: "Category not found | LaunchHub" };
 
   return {
-    title: `Mejores proyectos y herramientas de ${category.name} | LaunchHub`,
-    description: category.description || `Descubre las mejores herramientas de ${category.name} en LaunchHub.`,
+    title: `Best ${category.name} Projects & Tools | LaunchHub`,
+    description: category.description || `Discover the best ${category.name} tools and startups on LaunchHub.`,
   };
 }
 
@@ -52,7 +52,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Categ
         className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-[#E4572E] transition-colors"
       >
         <ArrowLeft className="w-3.5 h-3.5" />
-        Volver a todas las categorías
+        Back to all categories
       </Link>
 
       {/* Hero Categoría */}
@@ -67,11 +67,11 @@ export default async function CategoryDetailPage({ params, searchParams }: Categ
                 {category.name}
               </h1>
               <span className="font-mono text-xs font-bold px-2 py-0.5 rounded-md bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-                {totalCount} proyectos
+                {totalCount} projects
               </span>
             </div>
             <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 max-w-xl leading-relaxed">
-              {category.description || `Explora las soluciones más votadas y recientes dentro de la categoría ${category.name}.`}
+              {category.description || `Explore top voted and newly submitted projects in ${category.name}.`}
             </p>
           </div>
         </div>
@@ -81,7 +81,7 @@ export default async function CategoryDetailPage({ params, searchParams }: Categ
           className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm shrink-0"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          Publicar en {category.name}
+          Submit in {category.name}
         </Link>
       </div>
 
@@ -90,9 +90,9 @@ export default async function CategoryDetailPage({ params, searchParams }: Categ
         <ProjectGrid projects={items} />
       ) : (
         <EmptyState
-          title={`Aún no hay proyectos en ${category.name}`}
-          description="Sé el primero en lanzar tu proyecto dentro de esta categoría y obtén máxima visibilidad."
-          actionText="Publicar Proyecto"
+          title={`No projects yet in ${category.name}`}
+          description="Be the first to launch your project in this category and get maximum visibility."
+          actionText="Submit Project"
           actionHref="/submit"
         />
       )}

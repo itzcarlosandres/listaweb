@@ -34,7 +34,7 @@ export function VoteButton({
     e.stopPropagation();
 
     if (!session?.user) {
-      toast.info("Inicia sesión para votar por este proyecto");
+      toast.info("Please sign in to upvote this project");
       router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
@@ -58,7 +58,7 @@ export function VoteButton({
         // Revert on failure
         setHasVoted(previousVoted);
         setVotesCount(previousCount);
-        toast.error(res.error || "No se pudo registrar tu voto");
+        toast.error(res.error || "Could not register your vote");
       } else if (res.data) {
         setHasVoted(res.data.voted);
         setVotesCount(res.data.votesCount);
@@ -80,7 +80,7 @@ export function VoteButton({
         <ChevronUp className={`w-6 h-6 stroke-[3] transition-transform ${hasVoted ? "-translate-y-0.5" : "group-hover:-translate-y-0.5"}`} />
         <span className="font-mono text-lg leading-tight mt-0.5">{votesCount}</span>
         <span className="text-[10px] uppercase tracking-wider font-semibold opacity-80">
-          {hasVoted ? "Votado" : "Votar"}
+          {hasVoted ? "Upvoted" : "Upvote"}
         </span>
       </button>
     );

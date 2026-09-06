@@ -41,13 +41,13 @@ export default async function NotificationsPage() {
       <div>
         <div className="flex items-center gap-2 text-xs font-semibold text-[#E4572E] uppercase tracking-wider mb-1">
           <Bell className="w-4 h-4" />
-          <span>Centro de Actividad</span>
+          <span>Activity Center</span>
         </div>
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
-          Notificaciones
+          Notifications
         </h1>
         <p className="text-xs sm:text-sm text-neutral-500">
-          Votos, nuevos comentarios, seguidores y estado de revisión de tus proyectos.
+          Upvotes, new comments, followers, and moderation review status of your projects.
         </p>
       </div>
 
@@ -56,8 +56,8 @@ export default async function NotificationsPage() {
       ) : (
         <EmptyState
           icon={Bell}
-          title="No tienes notificaciones pendientes"
-          description="Te avisaremos aquí en tiempo real cuando la comunidad interactúe con tus lanzamientos."
+          title="No pending notifications"
+          description="We will notify you here in real time when makers and visitors interact with your launches."
         />
       )}
     </div>

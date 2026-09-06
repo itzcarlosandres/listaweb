@@ -31,22 +31,22 @@ export function ShareButton({ title, url, tagline }: ShareButtonProps) {
     try {
       await navigator.clipboard.writeText(fullUrl);
       setCopied(true);
-      toast.success("¡Enlace copiado al portapapeles!");
+      toast.success("Link copied to clipboard!");
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      toast.error("No se pudo copiar el enlace");
+      toast.error("Could not copy link");
     }
   };
 
-  const shareText = `Echa un vistazo a ${title} en @LaunchHub: ${tagline}`;
+  const shareText = `Check out ${title} on @LaunchHub: ${tagline}`;
 
   return (
     <div className="relative" ref={menuRef}>
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-10 h-10 rounded-xl border border-[#E7E4DB] dark:border-[#2E2B23] bg-white dark:bg-[#1A1813] text-neutral-600 dark:text-neutral-300 hover:border-[#E4572E] hover:text-[#E4572E] flex items-center justify-center transition-colors cursor-pointer"
-        title="Compartir proyecto"
-        aria-label="Compartir"
+        title="Share project"
+        aria-label="Share"
       >
         <Share2 className="w-4 h-4" />
       </button>
@@ -55,7 +55,7 @@ export function ShareButton({ title, url, tagline }: ShareButtonProps) {
         <div className="absolute right-0 mt-2 w-52 rounded-2xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] shadow-xl p-2 z-50 animate-in fade-in slide-in-from-top-2 duration-150">
           <div className="px-3 py-1.5 border-b border-[#E7E4DB] dark:border-[#2E2B23] mb-1">
             <span className="text-xs font-bold text-[#17150F] dark:text-[#FAF9F6]">
-              Compartir proyecto
+              Share project
             </span>
           </div>
 
@@ -69,7 +69,7 @@ export function ShareButton({ title, url, tagline }: ShareButtonProps) {
               ) : (
                 <Copy className="w-4 h-4 text-neutral-400" />
               )}
-              {copied ? "¡Copiado!" : "Copiar enlace"}
+              {copied ? "Copied!" : "Copy link"}
             </button>
 
             {/* X / Twitter */}

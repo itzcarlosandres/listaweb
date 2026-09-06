@@ -101,18 +101,18 @@ export function ProjectCard({ project, featuredWide = false }: ProjectCardProps)
             <Link
               href={`/user/${project.user.username}`}
               className="flex items-center gap-1.5 hover:text-[#17150F] dark:hover:text-[#FAF9F6] transition-colors"
-              title={`Por ${project.user.name || project.user.username}`}
+              title={`By ${project.user.name || project.user.username}`}
             >
               <UserAvatar src={project.user.image} name={project.user.name} size="sm" />
               <span className="font-medium truncate max-w-[90px]">{project.user.username}</span>
             </Link>
 
-            <span className="flex items-center gap-1 font-mono text-[11px]" title="Comentarios">
+            <span className="flex items-center gap-1 font-mono text-[11px]" title="Comments">
               <MessageSquare className="w-3.5 h-3.5" />
               {project.commentsCount}
             </span>
 
-            <span className="flex items-center gap-1 font-mono text-[11px]" title="Vistas">
+            <span className="flex items-center gap-1 font-mono text-[11px]" title="Views">
               <Eye className="w-3.5 h-3.5" />
               {project.viewsCount}
             </span>

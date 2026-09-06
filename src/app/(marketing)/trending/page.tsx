@@ -14,13 +14,13 @@ export default async function TrendingPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-amber-500 uppercase tracking-wider">
           <Flame className="w-4 h-4" />
-          <span>Algoritmo de Momentum en Tiempo Real</span>
+          <span>Real-Time Momentum Algorithm</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#17150F] dark:text-[#FAF9F6] tracking-tight">
-          Proyectos Trending
+          Trending Projects
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          Clasificación ponderada por votos recientes, favoritos, visitas y comentarios de las últimas 24 horas con decaimiento temporal.
+          Weighted ranking powered by recent upvotes, favorites, visits, and comments from the last 24 hours with time decay.
         </p>
 
         <RankingNavTabs />

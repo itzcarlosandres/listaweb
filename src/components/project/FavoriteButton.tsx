@@ -30,7 +30,7 @@ export function FavoriteButton({
     e.stopPropagation();
 
     if (!session?.user) {
-      toast.info("Inicia sesión para guardar proyectos en favoritos");
+      toast.info("Please sign in to save projects to favorites");
       router.push(`/login?callbackUrl=${encodeURIComponent(window.location.pathname)}`);
       return;
     }
@@ -42,10 +42,10 @@ export function FavoriteButton({
       const res = await toggleFavorite(projectId);
       if (!res.success) {
         setHasFavorited(previousState);
-        toast.error(res.error || "No se pudo actualizar favoritos");
+        toast.error(res.error || "Could not update favorites");
       } else if (res.data) {
         setHasFavorited(res.data.favorited);
-        toast.success(res.data.favorited ? "Guardado en tus favoritos" : "Eliminado de favoritos");
+        toast.success(res.data.favorited ? "Saved to your favorites" : "Removed from favorites");
       }
     });
   };
@@ -61,8 +61,8 @@ export function FavoriteButton({
           ? "bg-amber-500/10 text-amber-500 border-amber-500/30 dark:bg-amber-500/20"
           : "bg-white dark:bg-[#1A1813] text-neutral-500 dark:text-neutral-400 border-[#E7E4DB] dark:border-[#2E2B23] hover:border-amber-400 hover:text-amber-500"
       } ${className}`}
-      title={hasFavorited ? "Eliminar de guardados" : "Guardar en favoritos"}
-      aria-label="Guardar proyecto"
+      title={hasFavorited ? "Remove from saved" : "Save to favorites"}
+      aria-label="Save project"
     >
       <Bookmark
         className={`${size === "sm" ? "w-4 h-4" : "w-5 h-5"} ${hasFavorited ? "fill-amber-500" : ""}`}

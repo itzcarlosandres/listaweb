@@ -9,9 +9,9 @@ export function RankingNavTabs() {
 
   const tabs = [
     { href: "/trending", label: "🔥 Trending", icon: Flame },
-    { href: "/today", label: "Hoy", icon: Clock },
-    { href: "/week", label: "Esta Semana", icon: Calendar },
-    { href: "/month", label: "Este Mes", icon: Trophy },
+    { href: "/today", label: "Today", icon: Clock },
+    { href: "/week", label: "This Week", icon: Calendar },
+    { href: "/month", label: "This Month", icon: Trophy },
   ];
 
   return (

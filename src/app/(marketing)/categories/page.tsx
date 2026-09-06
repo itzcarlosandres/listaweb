@@ -13,13 +13,13 @@ export default async function CategoriesPage() {
       <div className="space-y-2">
         <div className="flex items-center gap-2 text-xs font-semibold text-purple-600 dark:text-purple-400 uppercase tracking-wider">
           <Layers className="w-4 h-4" />
-          <span>Ecosistema & Taxonomía</span>
+          <span>Ecosystem & Taxonomy</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#17150F] dark:text-[#FAF9F6] tracking-tight">
-          Todas las Categorías
+          All Categories
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          Explora proyectos agrupados en nuestras 16 categorías especializadas para encontrar exactamente lo que buscas.
+          Explore projects grouped into specialized categories to find exactly what you need.
         </p>
       </div>
 
@@ -35,7 +35,7 @@ export default async function CategoriesPage() {
                 <CategoryIcon name={category.icon} className="w-6 h-6" />
               </div>
               <span className="font-mono text-xs font-bold px-2.5 py-1 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
-                {category._count.projects} proyectos
+                {category._count.projects} projects
               </span>
             </div>
 
@@ -49,7 +49,7 @@ export default async function CategoriesPage() {
             </div>
 
             <div className="pt-2 flex items-center text-xs font-bold text-[#E4572E] group-hover:translate-x-1 transition-transform">
-              Ver proyectos en {category.name}
+              Explore {category.name}
               <ChevronRight className="w-4 h-4 ml-1" />
             </div>
           </Link>

@@ -12,8 +12,8 @@ interface SearchPageProps {
 export async function generateMetadata({ searchParams }: SearchPageProps): Promise<Metadata> {
   const { q } = await searchParams;
   return {
-    title: q ? `Buscar "${q}" | LaunchHub` : "Buscador de Proyectos | LaunchHub",
-    description: "Encuentra herramientas, SaaS, apps y startups digitales.",
+    title: q ? `Search "${q}" | LaunchHub` : "Project Search | LaunchHub",
+    description: "Discover tools, SaaS, apps, and digital startups.",
   };
 }
 
@@ -58,10 +58,10 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
       {/* Header & Search Bar */}
       <div className="max-w-2xl mx-auto text-center space-y-4">
         <h1 className="text-3xl font-extrabold font-heading text-neutral-950 dark:text-white">
-          Buscador de Productos & Startups
+          Discover Products & Startups
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400">
-          Explora cientos de herramientas, software independiente y aplicaciones en español.
+          Explore hundreds of indie tools, applications, and software platforms.
         </p>
 
         <form method="GET" className="relative mt-4">
@@ -70,7 +70,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             type="text"
             name="q"
             defaultValue={query}
-            placeholder="Buscar por nombre, nicho o tecnología (ej. 'IA', 'Notion', 'CRM')..."
+            placeholder="Search by name, niche, or tech (e.g. 'AI', 'Notion', 'CRM')..."
             className="w-full pl-11 pr-4 py-3 text-sm bg-white dark:bg-[#1E1C16] border border-[#E7E4DB] dark:border-[#2E2B23] rounded-2xl shadow-sm focus:outline-none focus:ring-2 focus:ring-primary/20 text-neutral-900 dark:text-neutral-100 placeholder:text-neutral-400"
           />
         </form>
@@ -82,7 +82,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           <div>
             <div className="flex items-center justify-between mb-6">
               <span className="text-sm text-neutral-600 dark:text-neutral-400">
-                Mostrando <strong>{projects.length}</strong> resultados para &ldquo;
+                Showing <strong>{projects.length}</strong> results for &ldquo;
                 <span className="text-primary font-medium">{query}</span>&rdquo;
               </span>
             </div>
@@ -90,17 +90,17 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
             {projects.length === 0 ? (
               <div className="py-16 text-center bg-white dark:bg-[#1E1C16] rounded-2xl border border-[#E7E4DB] dark:border-[#2E2B23]">
                 <p className="text-base font-semibold text-neutral-800 dark:text-neutral-200">
-                  No se encontraron proyectos para &ldquo;{query}&rdquo;
+                  No projects found for &ldquo;{query}&rdquo;
                 </p>
                 <p className="text-xs text-neutral-500 mt-1 max-w-sm mx-auto">
-                  Prueba con términos más generales o explora por categoría.
+                  Try broader search terms or browse by category.
                 </p>
                 <Link
                   href="/explore"
                   className="inline-flex items-center gap-1.5 mt-4 px-4 py-2 rounded-xl text-xs font-bold bg-primary text-white hover:bg-primary/90 transition-colors"
                 >
                   <Sparkles className="w-4 h-4" />
-                  Explorar todo el catálogo
+                  Explore full directory
                 </Link>
               </div>
             ) : (
@@ -109,7 +109,7 @@ export default async function SearchPage({ searchParams }: SearchPageProps) {
           </div>
         ) : (
           <div className="py-12 text-center text-sm text-neutral-500">
-            Introduce un término de búsqueda arriba o presiona <kbd className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 font-mono text-xs border border-[#E7E4DB] dark:border-[#2E2B23]">⌘K</kbd> en cualquier momento.
+            Type a search term above or press <kbd className="px-1.5 py-0.5 rounded bg-neutral-100 dark:bg-neutral-800 font-mono text-xs border border-[#E7E4DB] dark:border-[#2E2B23]">⌘K</kbd> anytime.
           </div>
         )}
       </div>

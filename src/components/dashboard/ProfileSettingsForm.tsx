@@ -69,14 +69,14 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
 
       const data = await res.json();
       if (!res.ok) {
-        toast.error(data.error || "Error al subir avatar");
+        toast.error(data.error || "Failed to upload avatar");
         return;
       }
 
       setValue("image", data.url);
-      toast.success("Avatar actualizado");
+      toast.success("Avatar updated");
     } catch {
-      toast.error("Error al subir imagen");
+      toast.error("Failed to upload image");
     } finally {
       setIsUploadingAvatar(false);
     }
@@ -86,9 +86,9 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
     startTransition(async () => {
       const res = await updateUserProfile(data);
       if (!res.success) {
-        toast.error(res.error || "No se pudo actualizar el perfil");
+        toast.error(res.error || "Could not update profile");
       } else {
-        toast.success("Perfil actualizado correctamente");
+        toast.success("Profile updated successfully");
       }
     });
   };
@@ -98,11 +98,11 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
     try {
       const res = await exportUserData();
       if (!res.success || !res.data) {
-        toast.error(res.error || "Error al exportar datos");
+        toast.error(res.error || "Failed to export data");
         return;
       }
 
-      // Descargar archivo JSON en el navegador
+      // Download JSON file in browser
       const blob = new Blob([res.data], { type: "application/json" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -113,9 +113,9 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
       document.body.removeChild(a);
       URL.revokeObjectURL(url);
 
-      toast.success("Tus datos han sido exportados en formato JSON");
+      toast.success("Your data has been exported as JSON");
     } catch {
-      toast.error("Error al exportar datos");
+      toast.error("Failed to export data");
     } finally {
       setIsExporting(false);
     }
@@ -123,10 +123,10 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
 
   return (
     <div className="space-y-10">
-      {/* 1. Formulario de Perfil */}
+      {/* 1. Profile Form */}
       <form onSubmit={handleSubmit(onSubmit)} className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-6 shadow-xs">
         <h2 className="font-display font-bold text-lg text-[#17150F] dark:text-[#FAF9F6]">
-          Información del Perfil
+          Profile Information
         </h2>
 
         {/* Avatar Upload */}
@@ -145,7 +145,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
               ) : (
                 <Upload className="w-3.5 h-3.5" />
               )}
-              Cambiar foto de perfil
+              Change profile photo
               <input
                 type="file"
                 accept="image/*"
@@ -157,7 +157,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
               />
             </label>
             <p className="text-[11px] text-neutral-500 mt-1">
-              JPG, PNG o WebP, máx 2MB.
+              JPG, PNG or WebP, max 2MB.
             </p>
           </div>
         </div>
@@ -165,12 +165,12 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-              Nombre Completo
+              Full Name
             </label>
             <input
               {...register("name")}
               type="text"
-              placeholder="Tu nombre"
+              placeholder="Your name"
               className="w-full px-4 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
             />
             {errors.name && (
@@ -180,7 +180,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-              Nombre de Usuario (@)
+              Username (@)
             </label>
             <input
               type="text"
@@ -193,13 +193,13 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
 
         <div>
           <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-            Biografía Breve
+            Short Bio
           </label>
           <textarea
             {...register("bio")}
             rows={3}
             maxLength={300}
-            placeholder="Cuéntale a la comunidad qué proyectos estás creando, tus intereses o especialidad..."
+            placeholder="Tell the community what projects you're building, your interests, or areas of expertise..."
             className="w-full p-3.5 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E] resize-none"
           />
         </div>
@@ -207,14 +207,14 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-              Sitio Web Personal
+              Personal Website
             </label>
             <div className="relative">
               <Globe className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
               <input
                 {...register("website")}
                 type="url"
-                placeholder="https://tudominio.com"
+                placeholder="https://yourdomain.com"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
               />
             </div>
@@ -225,7 +225,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
 
           <div>
             <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-              País (Código ISO, ej: ES, MX)
+              Country (ISO code, e.g. US, GB, ES)
             </label>
             <div className="relative">
               <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
@@ -233,7 +233,7 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
                 {...register("country")}
                 type="text"
                 maxLength={2}
-                placeholder="ES"
+                placeholder="US"
                 className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm uppercase bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
               />
             </div>
@@ -249,25 +249,25 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
             {isPending ? (
               <>
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                Guardando...
+                Saving...
               </>
             ) : (
               <>
                 <Save className="w-3.5 h-3.5" />
-                Guardar Cambios
+                Save Changes
               </>
             )}
           </button>
         </div>
       </form>
 
-      {/* 2. Exportar Datos y Privacidad (GDPR) */}
+      {/* 2. Export Data & Privacy (GDPR) */}
       <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-4 shadow-xs">
         <h2 className="font-display font-bold text-lg text-[#17150F] dark:text-[#FAF9F6]">
-          Privacidad y Exportación de Datos
+          Privacy & Data Export
         </h2>
         <p className="text-xs text-neutral-500">
-          Descarga una copia completa de toda tu información, historial de votos, comentarios y proyectos en formato JSON.
+          Download a full export of your account information, upvotes history, comments, and submitted projects in JSON format.
         </p>
         <button
           onClick={handleExport}
@@ -279,24 +279,24 @@ export function ProfileSettingsForm({ user }: ProfileSettingsFormProps) {
           ) : (
             <Download className="w-3.5 h-3.5" />
           )}
-          Exportar mis datos (JSON)
+          Export my data (JSON)
         </button>
       </div>
 
-      {/* 3. Sesión y Cierre */}
+      {/* 3. Session & Sign Out */}
       <div className="p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-red-200 dark:border-red-950/50 space-y-4 shadow-xs">
         <h2 className="font-display font-bold text-lg text-red-600 dark:text-red-400">
-          Cerrar Sesión
+          Sign Out
         </h2>
         <p className="text-xs text-neutral-500">
-          Finaliza tu sesión activa en este dispositivo de forma segura.
+          Securely sign out of your account on this device.
         </p>
         <button
           onClick={() => signOut({ callbackUrl: "/" })}
           className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-red-600 text-white hover:bg-red-700 transition-colors cursor-pointer"
         >
           <LogOut className="w-3.5 h-3.5" />
-          Cerrar Sesión
+          Sign Out
         </button>
       </div>
     </div>

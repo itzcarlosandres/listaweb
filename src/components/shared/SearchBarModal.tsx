@@ -119,7 +119,7 @@ export function SearchBarModal() {
       >
         <div className="flex items-center gap-2">
           <Search className="w-3.5 h-3.5 text-neutral-400 group-hover:text-primary transition-colors" />
-          <span className="truncate">Buscar productos...</span>
+          <span className="truncate">Search products...</span>
         </div>
         <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-neutral-500 bg-white dark:bg-[#1E1C16] border border-[#E7E4DB] dark:border-[#2E2B23] rounded-md">
           <span className="text-xs">⌘</span>K
@@ -141,7 +141,7 @@ export function SearchBarModal() {
                 type="text"
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                placeholder="Buscar SaaS, apps, categorías o creadores..."
+                placeholder="Search SaaS, apps, categories or makers..."
                 className="w-full bg-transparent text-sm sm:text-base font-medium text-neutral-900 dark:text-white placeholder:text-neutral-400 focus:outline-none"
               />
               {query && (
@@ -166,7 +166,7 @@ export function SearchBarModal() {
               {loading && (
                 <div className="py-8 text-center text-xs text-neutral-400 flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-                  Buscando en LaunchHub...
+                  Searching LaunchHub...
                 </div>
               )}
 
@@ -174,7 +174,7 @@ export function SearchBarModal() {
                 <div className="space-y-4">
                   <div>
                     <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-2 block mb-2">
-                      Accesos Rápidos
+                      Quick Access
                     </span>
                     <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
                       <button
@@ -186,7 +186,7 @@ export function SearchBarModal() {
                           <span className="font-semibold text-neutral-900 dark:text-neutral-100 block text-xs">
                             Trending
                           </span>
-                          <span className="text-[10px] text-neutral-500">Más votados hoy</span>
+                          <span className="text-[10px] text-neutral-500">Most upvoted today</span>
                         </div>
                       </button>
 
@@ -197,9 +197,9 @@ export function SearchBarModal() {
                         <Sparkles className="w-4 h-4 text-primary" />
                         <div>
                           <span className="font-semibold text-neutral-900 dark:text-neutral-100 block text-xs">
-                            Explorar
+                            Explore
                           </span>
-                          <span className="text-[10px] text-neutral-500">Filtros avanzados</span>
+                          <span className="text-[10px] text-neutral-500">Advanced filters</span>
                         </div>
                       </button>
 
@@ -210,9 +210,9 @@ export function SearchBarModal() {
                         <Layers className="w-4 h-4 text-amber-500" />
                         <div>
                           <span className="font-semibold text-neutral-900 dark:text-neutral-100 block text-xs">
-                            Categorías
+                            Categories
                           </span>
-                          <span className="text-[10px] text-neutral-500">16 colecciones</span>
+                          <span className="text-[10px] text-neutral-500">Browse collections</span>
                         </div>
                       </button>
                     </div>
@@ -223,10 +223,10 @@ export function SearchBarModal() {
               {!loading && query && !hasResults && (
                 <div className="py-12 text-center">
                   <p className="text-neutral-600 dark:text-neutral-400 font-medium">
-                    No encontramos resultados para &ldquo;{query}&rdquo;
+                    No results found for &ldquo;{query}&rdquo;
                   </p>
                   <p className="text-xs text-neutral-500 mt-1">
-                    Prueba buscando por palabras clave, categoría o nombre de creador.
+                    Try searching by keywords, category or creator name.
                   </p>
                 </div>
               )}
@@ -235,7 +235,7 @@ export function SearchBarModal() {
               {results.projects.length > 0 && (
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-2 block mb-2">
-                    Proyectos y SaaS ({results.projects.length})
+                    Projects & SaaS ({results.projects.length})
                   </span>
                   <div className="space-y-1">
                     {results.projects.map((p) => (
@@ -280,7 +280,7 @@ export function SearchBarModal() {
               {results.categories.length > 0 && (
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-2 block mb-2">
-                    Categorías ({results.categories.length})
+                    Categories ({results.categories.length})
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     {results.categories.map((c) => (
@@ -310,7 +310,7 @@ export function SearchBarModal() {
               {results.users.length > 0 && (
                 <div>
                   <span className="text-xs font-semibold uppercase tracking-wider text-neutral-400 px-2 block mb-2">
-                    Creadores ({results.users.length})
+                    Makers ({results.users.length})
                   </span>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-1.5">
                     {results.users.map((u) => (
@@ -343,7 +343,7 @@ export function SearchBarModal() {
 
             {/* Footer helper */}
             <div className="px-4 py-2.5 bg-[#FAF9F6] dark:bg-[#17150F] border-t border-[#E7E4DB] dark:border-[#2E2B23] flex items-center justify-between text-[11px] text-neutral-500">
-              <span>Navega con ⌘K o haz clic en cualquier resultado</span>
+              <span>Navigate with ⌘K or click any item</span>
               <span className="font-mono">LaunchHub 2026</span>
             </div>
           </div>

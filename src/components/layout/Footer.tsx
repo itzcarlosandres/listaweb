@@ -10,11 +10,11 @@ export async function Footer() {
 
   return (
     <footer className="border-t border-[#E7E4DB] dark:border-[#2E2B23] bg-white dark:bg-[#16140F] mt-auto">
-      {/* Banner de Datos de Demostración */}
+      {/* Demo Data Banner */}
       <div className="bg-amber-500/10 border-b border-amber-500/20 py-2 px-4 text-center">
         <p className="text-xs font-medium text-amber-700 dark:text-amber-400 flex items-center justify-center gap-1.5">
           <Sparkles className="w-3.5 h-3.5" />
-          <span>Plataforma en vivo con <strong>datos de demostración</strong> para pruebas de comunidad y ranking.</span>
+          <span>Live platform for builders and early adopters to discover next-gen products.</span>
         </p>
       </div>
 
@@ -35,12 +35,12 @@ export async function Footer() {
             </Link>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-sm leading-relaxed">
               {brandSettings.siteTagline ||
-                "El ecosistema definitivo para que creadores, fundadores e indie hackers lancen gratuitamente sus proyectos y consigan visibilidad real por la comunidad."}
+                "The definitive launchpad for creators, founders, and indie hackers to launch products and gain real community traction."}
             </p>
             <div className="flex items-center gap-3 pt-1">
               <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
                 <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
-                Moderación activa & anti-spam
+                Active moderation & anti-spam
               </span>
             </div>
           </div>
@@ -48,7 +48,7 @@ export async function Footer() {
           {/* Categorías */}
           <div>
             <h3 className="font-display font-bold text-sm text-[#17150F] dark:text-[#FAF9F6] mb-3">
-              Categorías Populares
+              Popular Categories
             </h3>
             <ul className="space-y-2 text-xs">
               {popularCategories.map((cat) => (
@@ -67,7 +67,7 @@ export async function Footer() {
           {/* Navegación y Enlaces */}
           <div>
             <h3 className="font-display font-bold text-sm text-[#17150F] dark:text-[#FAF9F6] mb-3">
-              Plataforma
+              Platform
             </h3>
             <ul className="space-y-2 text-xs">
               <li>
@@ -75,7 +75,7 @@ export async function Footer() {
                   href="/explore"
                   className="text-neutral-600 dark:text-neutral-400 hover:text-[#E4572E] dark:hover:text-[#E4572E] transition-colors"
                 >
-                  Explorar Catálogo
+                  Explore Directory
                 </Link>
               </li>
               <li>
@@ -83,7 +83,7 @@ export async function Footer() {
                   href="/trending"
                   className="text-neutral-600 dark:text-neutral-400 hover:text-[#E4572E] dark:hover:text-[#E4572E] transition-colors"
                 >
-                  Trending del Día
+                  Daily Trending
                 </Link>
               </li>
               <li>
@@ -91,7 +91,7 @@ export async function Footer() {
                   href="/pricing"
                   className="text-neutral-600 dark:text-neutral-400 hover:text-[#E4572E] dark:hover:text-[#E4572E] transition-colors"
                 >
-                  Planes & Boosts
+                  Plans & Boosts
                 </Link>
               </li>
               <li>
@@ -99,7 +99,7 @@ export async function Footer() {
                   href="/submit"
                   className="text-neutral-600 dark:text-neutral-400 hover:text-[#E4572E] dark:hover:text-[#E4572E] transition-colors"
                 >
-                  Publicar Producto
+                  Submit Product
                 </Link>
               </li>
             </ul>
@@ -108,16 +108,16 @@ export async function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-[#E7E4DB]/60 dark:border-[#2E2B23]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
-          <p>© {new Date().getFullYear()} {brandSettings.siteName || "LaunchHub"} Inc. Todos los derechos reservados.</p>
+          <p>© {new Date().getFullYear()} {brandSettings.siteName || "LaunchHub"} Inc. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/terms" className="hover:text-[#E4572E] transition-colors">
-              Términos
+              Terms
             </Link>
             <Link href="/privacy" className="hover:text-[#E4572E] transition-colors">
-              Privacidad
+              Privacy
             </Link>
             <Link href="/guidelines" className="hover:text-[#E4572E] transition-colors">
-              Guía de la Comunidad
+              Community Guidelines
             </Link>
           </div>
         </div>

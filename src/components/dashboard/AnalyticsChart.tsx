@@ -58,7 +58,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
           <Area
             type="monotone"
             dataKey="views"
-            name="Vistas"
+            name="Views"
             stroke="#E4572E"
             strokeWidth={2.5}
             fillOpacity={1}
@@ -67,7 +67,7 @@ export function AnalyticsChart({ data }: AnalyticsChartProps) {
           <Area
             type="monotone"
             dataKey="clicks"
-            name="Clicks Web"
+            name="Website Clicks"
             stroke="#10B981"
             strokeWidth={2}
             fillOpacity={1}

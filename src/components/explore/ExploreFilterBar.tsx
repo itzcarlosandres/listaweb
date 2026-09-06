@@ -53,7 +53,7 @@ export function ExploreFilterBar() {
           <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             type="text"
-            placeholder="Buscar por nombre, descripción o palabras clave..."
+            placeholder="Search by name, description, or keywords..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] placeholder:text-neutral-400 focus:outline-none focus:border-[#E4572E] transition-colors"
@@ -66,9 +66,9 @@ export function ExploreFilterBar() {
             onChange={(e) => updateFilters("sort", e.target.value)}
             className="w-full sm:w-auto px-3.5 py-2 rounded-xl text-xs font-semibold bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E] transition-colors cursor-pointer"
           >
-            <option value="trending">🔥 Más Votados (Trending)</option>
-            <option value="newest">🚀 Más Nuevos</option>
-            <option value="most-viewed">👁️ Más Visitados</option>
+            <option value="trending">🔥 Top Voted (Trending)</option>
+            <option value="newest">🚀 Newest</option>
+            <option value="most-viewed">👁️ Most Viewed</option>
           </select>
         </div>
       </div>
@@ -77,7 +77,7 @@ export function ExploreFilterBar() {
       <div className="flex flex-wrap items-center gap-2 pt-1 border-t border-[#E7E4DB]/60 dark:border-[#2E2B23]/60">
         <div className="flex items-center gap-1.5 text-xs font-semibold text-neutral-500 mr-1">
           <Filter className="w-3.5 h-3.5" />
-          <span>Categoría:</span>
+          <span>Category:</span>
         </div>
 
         <button
@@ -88,7 +88,7 @@ export function ExploreFilterBar() {
               : "bg-neutral-100 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200"
           }`}
         >
-          Todas
+          All
         </button>
 
         {CATEGORIES_SEED.map((cat) => (
@@ -109,12 +109,12 @@ export function ExploreFilterBar() {
       {/* Precios y Botón Limpiar */}
       <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
         <div className="flex items-center gap-2">
-          <span className="text-xs font-semibold text-neutral-500">Modelo:</span>
+          <span className="text-xs font-semibold text-neutral-500">Pricing:</span>
           {[
-            { label: "Todos", value: "" },
-            { label: "Gratis", value: "FREE" },
+            { label: "All", value: "" },
+            { label: "Free", value: "FREE" },
             { label: "Freemium", value: "FREEMIUM" },
-            { label: "De Pago", value: "PAID" },
+            { label: "Paid", value: "PAID" },
             { label: "Open Source", value: "OPEN_SOURCE" },
           ].map((item) => (
             <button
@@ -137,7 +137,7 @@ export function ExploreFilterBar() {
             className="inline-flex items-center gap-1 text-xs font-medium text-red-500 hover:underline cursor-pointer"
           >
             <X className="w-3.5 h-3.5" />
-            Limpiar filtros
+            Clear filters
           </button>
         )}
       </div>

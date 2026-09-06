@@ -58,18 +58,18 @@ export default async function EditProjectPage({ params }: EditProjectPageProps) 
           className="inline-flex items-center gap-1.5 text-xs font-semibold text-neutral-500 hover:text-[#E4572E] transition-colors"
         >
           <ArrowLeft className="w-3.5 h-3.5" />
-          Volver a Mis Proyectos
+          Back to My Projects
         </Link>
 
         <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
-          Editar Proyecto: {project.name}
+          Edit Project: {project.name}
         </h1>
 
         {project.status === "APPROVED" && (
           <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex items-start gap-3 text-xs text-amber-800 dark:text-amber-300">
             <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
             <span>
-              <strong>Aviso de moderación:</strong> Este proyecto ya está publicado. Si modificas campos sensibles como el nombre, lema o descripción, pasará temporalmente a estado de revisión para validar los cambios.
+              <strong>Moderation notice:</strong> This project is already live. Modifying sensitive fields like name, tagline, or description will temporarily place it into review status to verify changes.
             </span>
           </div>
         )}

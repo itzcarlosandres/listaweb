@@ -37,11 +37,11 @@ export default async function LoginPage() {
             ))}
           </div>
           <blockquote className="text-xl font-medium leading-relaxed">
-            &ldquo;Publicamos en {brandSettings.siteName || "LaunchHub"} el primer día y conseguimos más de 1,200 visitas calificadas y nuestros primeros clientes de pago.&rdquo;
+            &ldquo;We launched on {brandSettings.siteName || "LaunchHub"} on day one and gained over 1,200 qualified visits and our first paying customers.&rdquo;
           </blockquote>
           <div>
             <div className="font-bold text-base">Elena Rostova</div>
-            <div className="text-sm text-neutral-400">Creadora de Software</div>
+            <div className="text-sm text-neutral-400">Software Maker</div>
           </div>
         </div>
 
@@ -49,7 +49,7 @@ export default async function LoginPage() {
           <span>© {new Date().getFullYear()} {brandSettings.siteName || "LaunchHub"} Inc.</span>
           <span className="flex items-center gap-1.5">
             <Sparkles className="w-3.5 h-3.5 text-[#E4572E]" />
-            Impulsando la nueva generación de creadores
+            Empowering the next generation of builders
           </span>
         </div>
       </div>
@@ -74,10 +74,10 @@ export default async function LoginPage() {
 
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#17150F] dark:text-[#FAF9F6]">
-              Bienvenido de nuevo
+              Welcome back
             </h1>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Ingresa tus credenciales para acceder a tu panel de control.
+              Enter your credentials to access your account dashboard.
             </p>
           </div>
 
@@ -86,12 +86,12 @@ export default async function LoginPage() {
           </Suspense>
 
           <p className="text-center text-xs text-neutral-500">
-            ¿No tienes cuenta aún?{" "}
+            Don&apos;t have an account yet?{" "}
             <Link
               href="/register"
               className="font-semibold text-[#E4572E] hover:underline"
             >
-              Regístrate gratis
+              Sign up for free
             </Link>
           </p>
         </div>

@@ -38,16 +38,16 @@ export function LoginForm() {
       });
 
       if (res?.error) {
-        toast.error("Correo electrónico o contraseña incorrectos");
+        toast.error("Incorrect email address or password");
         setIsLoading(false);
         return;
       }
 
-      toast.success("¡Bienvenido de vuelta a LaunchHub!");
+      toast.success("Welcome back to LaunchHub!");
       router.push(callbackUrl);
       router.refresh();
     } catch {
-      toast.error("Error al iniciar sesión. Inténtalo de nuevo.");
+      toast.error("Error signing in. Please try again.");
       setIsLoading(false);
     }
   };
@@ -56,14 +56,14 @@ export function LoginForm() {
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
         <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-          Correo Electrónico
+          Email Address
         </label>
         <div className="relative">
           <Mail className="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-neutral-400" />
           <input
             {...register("email")}
             type="email"
-            placeholder="tu@email.com"
+            placeholder="you@email.com"
             autoComplete="email"
             className="w-full pl-10 pr-4 py-2.5 rounded-xl text-sm bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] placeholder:text-neutral-400 focus:outline-none focus:ring-2 focus:ring-[#E4572E]/20 focus:border-[#E4572E] transition-all"
           />
@@ -76,7 +76,7 @@ export function LoginForm() {
       <div>
         <div className="flex items-center justify-between mb-1.5">
           <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400">
-            Contraseña
+            Password
           </label>
         </div>
         <div className="relative">
@@ -102,22 +102,15 @@ export function LoginForm() {
         {isLoading ? (
           <>
             <Loader2 className="w-4 h-4 animate-spin" />
-            Iniciando sesión...
+            Signing in...
           </>
         ) : (
           <>
-            Iniciar Sesión
+            Sign In
             <ArrowRight className="w-4 h-4" />
           </>
         )}
       </button>
-
-      <div className="pt-2 text-center text-xs text-neutral-600 dark:text-neutral-400">
-        ¿Aún no tienes cuenta?{" "}
-        <Link href="/register" className="font-semibold text-[#E4572E] hover:underline">
-          Regístrate gratis
-        </Link>
-      </div>
     </form>
   );
 }

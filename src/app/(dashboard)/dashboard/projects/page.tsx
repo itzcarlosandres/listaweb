@@ -37,14 +37,14 @@ export default async function UserProjectsPage() {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
             <CheckCircle2 className="w-3.5 h-3.5" />
-            Aprobado
+            Approved
           </span>
         );
       case "PENDING":
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
             <Clock className="w-3.5 h-3.5" />
-            En Revisión
+            In Review
           </span>
         );
       case "REJECTED":
@@ -52,7 +52,7 @@ export default async function UserProjectsPage() {
           <div className="space-y-1">
             <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-red-500/10 text-red-600 dark:text-red-400 border border-red-500/20">
               <XCircle className="w-3.5 h-3.5" />
-              Rechazado
+              Rejected
             </span>
             {rejectionReason && (
               <p className="text-[11px] text-red-500 max-w-xs">{rejectionReason}</p>
@@ -63,7 +63,7 @@ export default async function UserProjectsPage() {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-neutral-200 dark:bg-neutral-800 text-neutral-600 dark:text-neutral-400">
             <AlertOctagon className="w-3.5 h-3.5" />
-            Suspendido
+            Suspended
           </span>
         );
     }
@@ -74,10 +74,10 @@ export default async function UserProjectsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
-            Mis Proyectos ({projects.length})
+            My Projects ({projects.length})
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500">
-            Gestiona, edita y revisa el estado de aprobación de tus publicaciones.
+            Manage, edit, and review the approval status of your project submissions.
           </p>
         </div>
 
@@ -86,7 +86,7 @@ export default async function UserProjectsPage() {
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          Publicar Nuevo Proyecto
+          Submit New Project
         </Link>
       </div>
 
@@ -136,19 +136,19 @@ export default async function UserProjectsPage() {
                   <div className="flex items-center gap-4 text-xs text-neutral-500 font-mono pt-1">
                     <span className="flex items-center gap-1">
                       <ChevronUp className="w-3.5 h-3.5 text-[#E4572E]" />
-                      {project.votesCount} votos
+                      {project.votesCount} upvotes
                     </span>
                     <span className="flex items-center gap-1">
                       <Eye className="w-3.5 h-3.5 text-emerald-500" />
-                      {project.viewsCount} visitas
+                      {project.viewsCount} views
                     </span>
                     <span className="flex items-center gap-1">
                       <Bookmark className="w-3.5 h-3.5 text-amber-500" />
-                      {project.favoritesCount} guardados
+                      {project.favoritesCount} saved
                     </span>
                     <span className="flex items-center gap-1">
                       <MessageSquare className="w-3.5 h-3.5 text-blue-500" />
-                      {project.commentsCount} comentarios
+                      {project.commentsCount} comments
                     </span>
                   </div>
                 </div>
@@ -162,7 +162,7 @@ export default async function UserProjectsPage() {
                     className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300 hover:bg-neutral-200 transition-colors"
                   >
                     <ExternalLink className="w-3.5 h-3.5" />
-                    Ver en vivo
+                    View live
                   </Link>
                 )}
 
@@ -171,7 +171,7 @@ export default async function UserProjectsPage() {
                   className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-semibold bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] text-neutral-700 dark:text-neutral-300 hover:border-[#E4572E] hover:text-[#E4572E] transition-colors"
                 >
                   <Edit className="w-3.5 h-3.5" />
-                  Editar
+                  Edit
                 </Link>
               </div>
             </div>
@@ -184,10 +184,10 @@ export default async function UserProjectsPage() {
           </div>
           <div className="space-y-1">
             <h3 className="font-display font-bold text-base text-[#17150F] dark:text-[#FAF9F6]">
-              No tienes ningún proyecto registrado
+              You don&apos;t have any projects registered
             </h3>
             <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-              Comienza publicando tu primera web, herramienta, SaaS o startup gratis.
+              Start by launching your first web, tool, SaaS, or startup for free.
             </p>
           </div>
           <Link
@@ -195,7 +195,7 @@ export default async function UserProjectsPage() {
             className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm"
           >
             <Plus className="w-4 h-4 stroke-[3]" />
-            Publicar Proyecto Gratis
+            Submit Project Free
           </Link>
         </div>
       )}

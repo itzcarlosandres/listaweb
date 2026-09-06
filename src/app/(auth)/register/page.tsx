@@ -33,19 +33,19 @@ export default async function RegisterPage() {
           <div className="space-y-3">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E4572E]/20 text-[#E4572E] border border-[#E4572E]/30">
               <Sparkles className="w-3.5 h-3.5" />
-              Publicación 100% Gratuita
+              100% Free Submission
             </span>
             <h2 className="text-2xl font-bold tracking-tight font-display">
-              Únete a miles de fundadores y desarrolladores.
+              Join thousands of founders and developers.
             </h2>
           </div>
 
           <div className="space-y-3">
             {[
-              "Publica tus webs, apps y herramientas sin costo alguno.",
-              "Obtén visibilidad real en rankings por votos de la comunidad.",
-              "Métricas de visitas, clicks y feedback en tiempo real.",
-              "Construye tu reputación como maker con tu perfil público.",
+              "Launch your websites, apps, and tools without any cost.",
+              "Gain genuine visibility through community-driven upvotes.",
+              "Real-time analytics on visits, clicks, and feedback.",
+              "Build your maker reputation with your public profile.",
             ].map((benefit, idx) => (
               <div key={idx} className="flex items-start gap-3">
                 <CheckCircle2 className="w-5 h-5 text-[#E4572E] shrink-0 mt-0.5" />
@@ -57,7 +57,7 @@ export default async function RegisterPage() {
 
         <div className="relative z-10 text-xs text-neutral-500 flex items-center justify-between">
           <span>© {new Date().getFullYear()} {brandSettings.siteName || "LaunchHub"} Inc.</span>
-          <span>Sin tarjeta de crédito requerida</span>
+          <span>No credit card required</span>
         </div>
       </div>
 
@@ -80,10 +80,10 @@ export default async function RegisterPage() {
 
           <div className="space-y-2">
             <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight font-display text-[#17150F] dark:text-[#FAF9F6]">
-              Crea tu cuenta gratis
+              Create your free account
             </h1>
             <p className="text-sm text-neutral-600 dark:text-neutral-400">
-              Lanza tu proyecto y comienza a recibir tracción hoy mismo.
+              Launch your project and start getting early traction today.
             </p>
           </div>
 
@@ -92,12 +92,12 @@ export default async function RegisterPage() {
           </Suspense>
 
           <p className="text-center text-xs text-neutral-500">
-            ¿Ya tienes cuenta?{" "}
+            Already have an account?{" "}
             <Link
               href="/login"
               className="font-semibold text-[#E4572E] hover:underline"
             >
-              Iniciar sesión
+              Sign in
             </Link>
           </p>
         </div>

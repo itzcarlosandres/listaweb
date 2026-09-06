@@ -3,7 +3,7 @@
 import { useTransition } from "react";
 import Link from "next/link";
 import { formatDistanceToNow } from "date-fns";
-import { es } from "date-fns/locale";
+import { enUS } from "date-fns/locale";
 import {
   markAllNotificationsAsRead,
   markNotificationAsRead,
@@ -42,8 +42,8 @@ export function NotificationList({ notifications }: NotificationListProps) {
   const handleMarkAll = () => {
     startTransition(async () => {
       const res = await markAllNotificationsAsRead();
-      if (!res.success) toast.error("No se pudieron actualizar las notificaciones");
-      else toast.success("Todas las notificaciones marcadas como leídas");
+      if (!res.success) toast.error("Could not update notifications");
+      else toast.success("All notifications marked as read");
     });
   };
 
@@ -77,61 +77,61 @@ export function NotificationList({ notifications }: NotificationListProps) {
       case "VOTE":
         return (
           <span>
-            Tu proyecto{" "}
+            Your project{" "}
             {n.project ? (
               <Link href={`/project/${n.project.slug}`} className="font-bold text-[#E4572E] hover:underline">
                 {n.project.name}
               </Link>
             ) : (
-              "un proyecto"
+              "a project"
             )}{" "}
-            ha recibido un nuevo voto de apoyo.
+            received a new upvote.
           </span>
         );
       case "COMMENT":
         return (
           <span>
-            Alguien ha dejado un comentario en tu proyecto{" "}
+            Someone left a comment on your project{" "}
             {n.project ? (
               <Link href={`/project/${n.project.slug}#comments`} className="font-bold text-[#E4572E] hover:underline">
                 {n.project.name}
               </Link>
             ) : (
-              "un proyecto"
+              "a project"
             )}
             .
           </span>
         );
       case "FOLLOW":
-        return <span>¡Tienes un nuevo seguidor en LaunchHub!</span>;
+        return <span>You have a new follower on LaunchHub!</span>;
       case "PROJECT_APPROVED":
         return (
           <span>
-            🎉 ¡Buenas noticias! Tu proyecto{" "}
+            🎉 Great news! Your project{" "}
             {n.project ? (
               <Link href={`/project/${n.project.slug}`} className="font-bold text-emerald-600 hover:underline">
                 {n.project.name}
               </Link>
             ) : (
-              "tu proyecto"
+              "your project"
             )}{" "}
-            ha sido aprobado y ya está visible en rankings públicos.
+            has been approved and is now live on public rankings.
           </span>
         );
       case "PROJECT_REJECTED":
         return (
           <span>
-            Tu proyecto requiere cambios antes de poder ser aprobado. Revisa los detalles en la pestaña de proyectos.
+            Your project requires revisions before it can be approved. Check details on your projects dashboard.
           </span>
         );
       case "TRENDING":
         return (
           <span>
-            🔥 ¡Felicidades! Tu proyecto ha entrado en el Top Trending del día.
+            🔥 Congratulations! Your project made it into today&apos;s Trending Top.
           </span>
         );
       case "BOOST_ENDED":
-        return <span>El periodo de impulso (Boost) para tu proyecto ha concluido.</span>;
+        return <span>The boost promotion for your project has concluded.</span>;
     }
   };
 
@@ -141,7 +141,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <span className="text-xs font-mono text-neutral-500">
-          {unreadCount} sin leer de {notifications.length} totales
+          {unreadCount} unread of {notifications.length} total
         </span>
 
         {unreadCount > 0 && (
@@ -155,7 +155,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
             ) : (
               <CheckCheck className="w-3.5 h-3.5" />
             )}
-            Marcar todas como leídas
+            Mark all as read
           </button>
         )}
       </div>
@@ -164,7 +164,7 @@ export function NotificationList({ notifications }: NotificationListProps) {
         {notifications.map((n) => {
           const timeAgo = formatDistanceToNow(new Date(n.createdAt), {
             addSuffix: true,
-            locale: es,
+            locale: enUS,
           });
 
           return (

@@ -62,7 +62,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
   }
 
   const related = await getRelatedProjects(project.categoryId, project.id, 3);
-  const formattedLaunchDate = new Intl.DateTimeFormat("es", {
+  const formattedLaunchDate = new Intl.DateTimeFormat("en-US", {
     month: "long",
     day: "numeric",
     year: "numeric",
@@ -149,12 +149,12 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
               <div className="flex items-center gap-4 text-xs text-neutral-500 flex-wrap pt-1 font-mono">
                 <span className="flex items-center gap-1.5">
                   <Calendar className="w-3.5 h-3.5 text-neutral-400" />
-                  Lanzado el {formattedLaunchDate}
+                  Launched on {formattedLaunchDate}
                 </span>
-                {project.country && <span>País: {project.country}</span>}
+                {project.country && <span>Country: {project.country}</span>}
                 <span className="flex items-center gap-1">
                   <Eye className="w-3.5 h-3.5 text-neutral-400" />
-                  {project.viewsCount} visitas
+                  {project.viewsCount} views
                 </span>
               </div>
             </div>
@@ -201,7 +201,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           {/* Descripción en detalle */}
           <div className="space-y-4 p-6 sm:p-8 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23]">
             <h2 className="font-display font-extrabold text-xl text-[#17150F] dark:text-[#FAF9F6]">
-              Acerca de {project.name}
+              About {project.name}
             </h2>
             <div className="text-sm sm:text-base text-neutral-700 dark:text-neutral-300 leading-relaxed space-y-4 whitespace-pre-line font-normal">
               {project.description}
@@ -211,13 +211,13 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           {/* Tags y Tecnologías */}
           <div className="space-y-4 p-6 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23]">
             <h3 className="font-display font-bold text-sm text-[#17150F] dark:text-[#FAF9F6]">
-              Especificaciones y Stack Técnico
+              Specifications & Tech Stack
             </h3>
 
             {project.technologies.length > 0 && (
               <div className="space-y-1.5">
                 <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block">
-                  Tecnologías Utilizadas:
+                  Technologies Used:
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {project.technologies.map(({ technology }) => (
@@ -234,7 +234,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
             {project.tags.length > 0 && (
               <div className="space-y-1.5 pt-2">
                 <span className="text-xs font-semibold text-neutral-500 uppercase tracking-wider block">
-                  Etiquetas:
+                  Tags:
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {project.tags.map(({ tag }) => (
@@ -282,7 +282,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                 href={`/user/${project.user.username}`}
                 className="text-xs font-bold text-[#E4572E] hover:underline"
               >
-                Ver perfil completo
+                View full profile
               </Link>
               {project.user.website && (
                 <a
@@ -292,7 +292,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
                   className="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white flex items-center gap-1"
                 >
                   <Globe className="w-3.5 h-3.5" />
-                  Sitio web
+                  Website
                 </a>
               )}
             </div>
@@ -302,7 +302,7 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           {related.length > 0 && (
             <div className="space-y-4">
               <h3 className="font-display font-bold text-base text-[#17150F] dark:text-[#FAF9F6]">
-                Más en {project.category.name}
+                More in {project.category.name}
               </h3>
               <div className="space-y-3">
                 {related.map((rel) => (

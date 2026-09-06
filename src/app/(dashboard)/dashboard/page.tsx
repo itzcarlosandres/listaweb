@@ -63,10 +63,10 @@ export default async function DashboardOverviewPage() {
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
           <h1 className="font-display font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
-            Hola, {session?.user.name || session?.user.username} 👋
+            Hello, {session?.user.name || session?.user.username} 👋
           </h1>
           <p className="text-xs sm:text-sm text-neutral-500">
-            Aquí tienes un resumen de la actividad y tracción de tus proyectos.
+            Here is a snapshot of your projects&apos; performance and community traction.
           </p>
         </div>
 
@@ -75,7 +75,7 @@ export default async function DashboardOverviewPage() {
           className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-bold text-xs bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm self-start sm:self-auto"
         >
           <Plus className="w-4 h-4 stroke-[3]" />
-          Publicar Nuevo Proyecto
+          Submit New Project
         </Link>
       </div>
 
@@ -83,7 +83,7 @@ export default async function DashboardOverviewPage() {
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Proyectos</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Projects</span>
             <FolderGit2 className="w-4 h-4 text-blue-500" />
           </div>
           <div className="flex items-baseline gap-2">
@@ -91,14 +91,14 @@ export default async function DashboardOverviewPage() {
               {totalProjects}
             </span>
             <span className="text-xs text-neutral-400 font-mono">
-              ({approvedProjects} aprobados)
+              ({approvedProjects} approved)
             </span>
           </div>
         </div>
 
         <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Votos Totales</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Total Upvotes</span>
             <ChevronUp className="w-4 h-4 text-[#E4572E] stroke-[3]" />
           </div>
           <span className="font-mono font-extrabold text-2xl sm:text-3xl text-[#E4572E]">
@@ -108,7 +108,7 @@ export default async function DashboardOverviewPage() {
 
         <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Vistas Totales</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Total Views</span>
             <Eye className="w-4 h-4 text-emerald-500" />
           </div>
           <span className="font-mono font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
@@ -118,7 +118,7 @@ export default async function DashboardOverviewPage() {
 
         <div className="p-5 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-2">
           <div className="flex items-center justify-between text-neutral-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Favoritos</span>
+            <span className="text-xs font-semibold uppercase tracking-wider">Favorites</span>
             <Bookmark className="w-4 h-4 text-amber-500" />
           </div>
           <span className="font-mono font-extrabold text-2xl sm:text-3xl text-[#17150F] dark:text-[#FAF9F6]">
@@ -132,7 +132,7 @@ export default async function DashboardOverviewPage() {
         <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 flex items-center gap-3 text-xs text-amber-800 dark:text-amber-300">
           <Clock className="w-4 h-4 text-amber-600 shrink-0" />
           <span>
-            Tienes <strong>{pendingProjects} proyecto(s)</strong> en revisión por moderación. Recibirás una notificación en cuanto sean aprobados.
+            You have <strong>{pendingProjects} project(s)</strong> under moderation review. You will receive a notification as soon as they are approved.
           </span>
         </div>
       )}
@@ -141,14 +141,14 @@ export default async function DashboardOverviewPage() {
       <div className="space-y-4">
         <div className="flex items-center justify-between">
           <h2 className="font-display font-extrabold text-lg sm:text-xl text-[#17150F] dark:text-[#FAF9F6]">
-            Tus Proyectos ({totalProjects})
+            Your Projects ({totalProjects})
           </h2>
           {totalProjects > 0 && (
             <Link
               href="/dashboard/projects"
               className="text-xs font-bold text-[#E4572E] hover:underline inline-flex items-center gap-1"
             >
-              Gestionar todos
+              Manage all
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           )}
@@ -167,10 +167,10 @@ export default async function DashboardOverviewPage() {
             </div>
             <div className="space-y-1">
               <h3 className="font-display font-bold text-base text-[#17150F] dark:text-[#FAF9F6]">
-                Aún no has publicado ningún proyecto
+                You haven&apos;t launched any project yet
               </h3>
               <p className="text-xs text-neutral-500 max-w-sm mx-auto">
-                Lanza tu primera app, SaaS o herramienta y empieza a ganar visibilidad hoy mismo.
+                Launch your first web, tool, or startup to gain exposure and feedback from the community.
               </p>
             </div>
             <Link
@@ -178,7 +178,7 @@ export default async function DashboardOverviewPage() {
               className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm"
             >
               <Plus className="w-4 h-4 stroke-[3]" />
-              Publicar mi primer proyecto
+              Submit my first project
             </Link>
           </div>
         )}

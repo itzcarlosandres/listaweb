@@ -12,28 +12,28 @@ interface BestPageProps {
 
 const ALIAS_MAP: Record<string, { name: string; categorySlug?: string; description: string }> = {
   saas: {
-    name: "Mejores Software as a Service (SaaS)",
+    name: "Best Software as a Service (SaaS)",
     categorySlug: "saas",
-    description: "Ranking actualizado de las mejores aplicaciones y plataformas SaaS creadas por la comunidad.",
+    description: "Up-to-date ranking of top SaaS applications and platforms built by the community.",
   },
   "ai-tools": {
-    name: "Mejores Herramientas de Inteligencia Artificial (AI)",
+    name: "Best Artificial Intelligence (AI) Tools",
     categorySlug: "ai",
-    description: "La selección definitiva de herramientas, agentes y modelos de IA más votados.",
+    description: "The definitive selection of top-voted AI tools, agents, and models.",
   },
   websites: {
-    name: "Mejores Sitios Web y Landing Pages",
+    name: "Best Websites & Landing Pages",
     categorySlug: "websites",
-    description: "Inspiración y directorios de los mejores sitios web independientes.",
+    description: "Inspiration and curated directory of top independent websites.",
   },
   startups: {
-    name: "Mejores Startups Emergentes",
-    description: "Las startups y proyectos independientes con mayor crecimiento y tracción comunitaria.",
+    name: "Best Emerging Startups",
+    description: "High-growth indie startups and side-projects with strong community traction.",
   },
   tools: {
-    name: "Mejores Herramientas para Desarrolladores",
+    name: "Best Developer Tools",
     categorySlug: "developer-tools",
-    description: "Utilidades, librerías y extensiones imprescindibles para programadores.",
+    description: "Essential utilities, libraries, and extensions for software developers.",
   },
 };
 
@@ -44,15 +44,14 @@ export async function generateStaticParams() {
     { slug: "websites" },
     { slug: "startups" },
     { slug: "tools" },
-    { slug: "ai-tools-septiembre-2026" },
   ];
 }
 
 export async function generateMetadata({ params }: BestPageProps): Promise<Metadata> {
   const { slug } = await params;
   const alias = ALIAS_MAP[slug];
-  const title = alias ? `${alias.name} | LaunchHub` : `Los Mejores Proyectos en ${slug} | LaunchHub`;
-  const description = alias ? alias.description : `Descubre el ranking de los mejores proyectos en LaunchHub.`;
+  const title = alias ? `${alias.name} | LaunchHub` : `Best Projects in ${slug} | LaunchHub`;
+  const description = alias ? alias.description : `Discover the top projects on LaunchHub.`;
 
   return { title, description };
 }
@@ -60,8 +59,8 @@ export async function generateMetadata({ params }: BestPageProps): Promise<Metad
 export default async function BestAliasesPage({ params }: BestPageProps) {
   const { slug } = await params;
   const alias = ALIAS_MAP[slug] || {
-    name: `Mejores proyectos: ${slug.replace(/-/g, " ")}`,
-    description: "Ranking comunitario basado en votos reales y opiniones verificadas.",
+    name: `Best projects: ${slug.replace(/-/g, " ")}`,
+    description: "Community ranking based on verified votes and real reviews.",
   };
 
   const { items } = await getExploreProjects({
@@ -79,7 +78,7 @@ export default async function BestAliasesPage({ params }: BestPageProps) {
         <div className="relative z-10 space-y-3">
           <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#E4572E]/20 text-[#E4572E] border border-[#E4572E]/30">
             <Award className="w-3.5 h-3.5" />
-            Ranking Oficial Curado
+            Curated Official Ranking
           </span>
           <h1 className="font-display font-extrabold text-2xl sm:text-4xl tracking-tight">
             {alias.name}
@@ -100,13 +99,13 @@ export default async function BestAliasesPage({ params }: BestPageProps) {
       {/* CTA Bottom */}
       <div className="text-center pt-8 border-t border-[#E7E4DB] dark:border-[#2E2B23] space-y-3">
         <p className="text-sm text-neutral-500">
-          ¿Tienes un proyecto que compite en esta categoría?
+          Have a project that fits this category?
         </p>
         <Link
           href="/submit"
           className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-xs bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm"
         >
-          Publicar mi proyecto gratis
+          Submit my project for free
           <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>

@@ -49,18 +49,17 @@ export function CommentItem({
 
   const timeAgo = formatDistanceToNow(new Date(comment.createdAt), {
     addSuffix: true,
-    locale: es,
   });
 
   const handleDelete = () => {
-    if (!confirm("¿Estás seguro de que deseas eliminar este comentario?")) return;
+    if (!confirm("Are you sure you want to delete this comment?")) return;
 
     startDeleteTransition(async () => {
       const res = await deleteComment(comment.id);
       if (!res.success) {
-        toast.error(res.error || "No se pudo eliminar el comentario");
+        toast.error(res.error || "Could not delete comment");
       } else {
-        toast.success("Comentario eliminado");
+        toast.success("Comment deleted");
       }
     });
   };
@@ -113,7 +112,7 @@ export function CommentItem({
               onClick={handleDelete}
               disabled={isPendingDelete}
               className="text-neutral-400 hover:text-red-500 transition-colors p-1"
-              title="Eliminar comentario"
+              title="Delete comment"
             >
               {isPendingDelete ? (
                 <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -136,7 +135,7 @@ export function CommentItem({
             className="inline-flex items-center gap-1 text-xs font-semibold text-neutral-500 hover:text-[#E4572E] transition-colors cursor-pointer"
           >
             <Reply className="w-3.5 h-3.5" />
-            Responder
+            Reply
           </button>
         </div>
 

@@ -13,13 +13,13 @@ export default async function MonthRankingPage() {
       <div className="space-y-4">
         <div className="flex items-center gap-2 text-xs font-semibold text-[#E4572E] uppercase tracking-wider">
           <Trophy className="w-4 h-4" />
-          <span>Top de los Últimos 30 Días</span>
+          <span>Top in the Last 30 Days</span>
         </div>
         <h1 className="font-display font-extrabold text-3xl sm:text-4xl text-[#17150F] dark:text-[#FAF9F6] tracking-tight">
-          Líderes del Mes
+          Monthly Leaders
         </h1>
         <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-2xl">
-          Las herramientas y startups más destacadas del mes en LaunchHub.
+          The most prominent tools and startups of the month on LaunchHub.
         </p>
 
         <RankingNavTabs />
