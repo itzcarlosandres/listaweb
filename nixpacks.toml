@@ -1,0 +1,15 @@
+# Configuration for Dokploy / Railway / Nixpacks builder
+[phases.setup]
+nixPkgs = ["nodejs_20", "openssl"]
+
+[phases.build]
+cmds = ["npx prisma generate", "npm run build"]
+
+[start]
+cmd = "npm run start"
+
+[variables]
+NEXT_TELEMETRY_DISABLED = "1"
+NODE_ENV = "production"
+DATABASE_URL = "postgresql://dummy:dummy@localhost:5432/dummy?schema=public"
+NEXTAUTH_SECRET = "build-secret-key-placeholder-32-chars-long"
