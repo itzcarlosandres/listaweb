@@ -1,0 +1,99 @@
+import Link from "next/link";
+import { auth } from "@/lib/auth";
+import { ThemeToggle } from "./ThemeToggle";
+import { UserNav } from "./UserNav";
+import { SearchBarModal } from "@/components/shared/SearchBarModal";
+import { BrandLogo } from "@/components/shared/BrandLogo";
+import { getGeneralSeoSettings } from "@/server/actions/admin";
+import { Plus, Flame, Compass, Layers, DollarSign } from "lucide-react";
+import type { SessionUser } from "@/types";
+
+export async function Navbar() {
+  const [session, brandSettings] = await Promise.all([
+    auth(),
+    getGeneralSeoSettings(),
+  ]);
+
+  const user = session?.user as SessionUser | undefined;
+
+  return (
+    <header className="sticky top-0 z-40 w-full border-b border-[#E7E4DB] dark:border-[#2E2B23] bg-[#FAF9F6]/85 dark:bg-[#12110D]/85 backdrop-blur-md">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+        {/* Dynamic Logo & Links */}
+        <div className="flex items-center gap-8">
+          <Link href="/" className="inline-flex items-center gap-2.5 group">
+            <BrandLogo
+              mode={brandSettings.logoMode}
+              logoUrl={brandSettings.logoUrl}
+              iconName={brandSettings.logoIcon}
+              text={brandSettings.logoText}
+              textHighlight={brandSettings.logoTextHighlight}
+              iconBg={brandSettings.logoIconBg}
+              size="md"
+            />
+          </Link>
+
+          <nav className="hidden lg:flex items-center gap-1 text-sm font-medium text-neutral-600 dark:text-neutral-400">
+            <Link
+              href="/explore"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
+            >
+              <Compass className="w-4 h-4" />
+              Explorar
+            </Link>
+            <Link
+              href="/trending"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
+            >
+              <Flame className="w-4 h-4 text-amber-500" />
+              Trending
+            </Link>
+            <Link
+              href="/categories"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
+            >
+              <Layers className="w-4 h-4" />
+              Categorías
+            </Link>
+            <Link
+              href="/pricing"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg hover:text-[#17150F] dark:hover:text-[#FAF9F6] hover:bg-neutral-200/50 dark:hover:bg-neutral-800/50 transition-colors"
+            >
+              <DollarSign className="w-4 h-4" />
+              Precios
+            </Link>
+          </nav>
+        </div>
+
+        {/* Acciones & Auth */}
+        <div className="flex items-center gap-2.5 sm:gap-3">
+          {/* Quick Search ⌘K Modal */}
+          <SearchBarModal />
+
+          <ThemeToggle />
+
+          {/* CTA Publicar */}
+          <Link
+            href="/submit"
+            className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] transition-all shadow-sm shadow-[#E4572E]/25 hover:shadow-md active:scale-95"
+          >
+            <Plus className="w-3.5 h-3.5 stroke-[3]" />
+            Publicar Proyecto
+          </Link>
+
+          {/* User Nav o Login */}
+          {user ? (
+            <UserNav user={user} />
+          ) : (
+            <Link
+              href="/login"
+              className="px-3.5 py-2 rounded-xl text-xs font-semibold text-neutral-700 dark:text-neutral-200 bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] hover:border-[#E4572E] hover:text-[#E4572E] transition-colors"
+            >
+              Iniciar Sesión
+            </Link>
+          )}
+        </div>
+      </div>
+    </header>
+  );
+}
