@@ -4,7 +4,11 @@ import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import { Sun, Moon } from "lucide-react";
 
-export function ThemeToggle() {
+interface ThemeToggleProps {
+  className?: string;
+}
+
+export function ThemeToggle({ className = "" }: ThemeToggleProps) {
   const { setTheme, resolvedTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
 
@@ -13,7 +17,7 @@ export function ThemeToggle() {
   }, []);
 
   if (!mounted) {
-    return <div className="w-9 h-9 rounded-xl bg-neutral-200/50 dark:bg-neutral-800/50 animate-pulse" />;
+    return <div className={`w-9 h-9 rounded-xl bg-neutral-200/50 dark:bg-neutral-800/50 animate-pulse ${className}`} />;
   }
 
   const isDark = resolvedTheme === "dark";
@@ -22,7 +26,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={() => setTheme(isDark ? "light" : "dark")}
-      className="w-9 h-9 rounded-xl flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60 border border-[#E7E4DB] dark:border-[#2E2B23] transition-colors cursor-pointer"
+      className={`w-9 h-9 rounded-xl flex items-center justify-center text-neutral-600 dark:text-neutral-300 hover:bg-neutral-200/60 dark:hover:bg-neutral-800/60 border border-[#E7E4DB] dark:border-[#2E2B23] transition-colors cursor-pointer ${className}`}
       title={isDark ? "Cambiar a modo claro" : "Cambiar a modo oscuro"}
       aria-label="Cambiar tema"
     >

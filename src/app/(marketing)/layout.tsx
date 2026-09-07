@@ -9,7 +9,7 @@ export default function MarketingLayout({
   return (
     <div className="min-h-screen flex flex-col bg-[#FAF9F6] dark:bg-[#12110D]">
       <Navbar />
-      <main className="flex-1">{children}</main>
+      <main className="flex-1 w-full max-w-full overflow-x-hidden">{children}</main>
       <Footer />
     </div>
   );

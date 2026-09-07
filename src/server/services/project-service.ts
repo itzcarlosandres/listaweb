@@ -329,3 +329,149 @@ export async function getRelatedProjects(categoryId: string, excludeId: string, 
     hasFavorited: Boolean(p.favorites && p.favorites.length > 0),
   })) as ProjectWithDetails[];
 }
+
+export async function getPopularPaidProjects(
+  limit = 4,
+  excludeId?: string
+): Promise<ProjectWithDetails[]> {
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+  const now = new Date();
+
+  const projects = await db.project.findMany({
+    where: {
+      status: "APPROVED",
+      ...(excludeId ? { id: { not: excludeId } } : {}),
+      OR: [
+        { boostedUntil: { gt: now } },
+        { featured: true },
+        { user: { plan: "PRO" } },
+      ],
+    },
+    include: {
+      category: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          role: true,
+          plan: true,
+        },
+      },
+      tags: { include: { tag: true } },
+      technologies: { include: { technology: true } },
+      votes: currentUserId
+        ? { where: { userId: currentUserId }, select: { id: true } }
+        : false,
+      favorites: currentUserId
+        ? { where: { userId: currentUserId }, select: { id: true } }
+        : false,
+    },
+    orderBy: [
+      { votesCount: "desc" },
+      { boostedUntil: "desc" },
+      { featured: "desc" },
+      { createdAt: "desc" },
+    ],
+    take: limit,
+  });
+
+  return projects.map((p) => ({
+    ...p,
+    screenshots: (p.screenshots as string[]) || [],
+    hasVoted: Boolean(p.votes && p.votes.length > 0),
+    hasFavorited: Boolean(p.favorites && p.favorites.length > 0),
+  })) as ProjectWithDetails[];
+}
+
+export async function getActiveHomepageSponsors(): Promise<ProjectWithDetails[]> {
+  const session = await auth();
+  const currentUserId = session?.user?.id;
+  const now = new Date();
+
+  // 1. Proyectos con colocación HOME_HERO activa
+  const featuredPlacements = await db.featuredProject.findMany({
+    where: {
+      placement: "HOME_HERO",
+      startsAt: { lte: now },
+      endsAt: { gt: now },
+      project: { status: "APPROVED" },
+    },
+    include: {
+      project: {
+        include: {
+          category: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              username: true,
+              image: true,
+              role: true,
+              plan: true,
+            },
+          },
+          tags: { include: { tag: true } },
+          technologies: { include: { technology: true } },
+          votes: currentUserId
+            ? { where: { userId: currentUserId }, select: { id: true } }
+            : false,
+          favorites: currentUserId
+            ? { where: { userId: currentUserId }, select: { id: true } }
+            : false,
+        },
+      },
+    },
+    orderBy: { createdAt: "desc" },
+    take: 10,
+  });
+
+  if (featuredPlacements.length > 0) {
+    return featuredPlacements.map((fp) => ({
+      ...fp.project,
+      screenshots: (fp.project.screenshots as string[]) || [],
+      hasVoted: Boolean(fp.project.votes && fp.project.votes.length > 0),
+      hasFavorited: Boolean(fp.project.favorites && fp.project.favorites.length > 0),
+    })) as ProjectWithDetails[];
+  }
+
+  // 2. Fallback: Proyectos destacados existentes
+  const fallbackFeatured = await db.project.findMany({
+    where: {
+      status: "APPROVED",
+      featured: true,
+    },
+    include: {
+      category: true,
+      user: {
+        select: {
+          id: true,
+          name: true,
+          username: true,
+          image: true,
+          role: true,
+          plan: true,
+        },
+      },
+      tags: { include: { tag: true } },
+      technologies: { include: { technology: true } },
+      votes: currentUserId
+        ? { where: { userId: currentUserId }, select: { id: true } }
+        : false,
+      favorites: currentUserId
+        ? { where: { userId: currentUserId }, select: { id: true } }
+        : false,
+    },
+    orderBy: [{ votesCount: "desc" }, { createdAt: "desc" }],
+    take: 5,
+  });
+
+  return fallbackFeatured.map((p) => ({
+    ...p,
+    screenshots: (p.screenshots as string[]) || [],
+    hasVoted: Boolean(p.votes && p.votes.length > 0),
+    hasFavorited: Boolean(p.favorites && p.favorites.length > 0),
+  })) as ProjectWithDetails[];
+}

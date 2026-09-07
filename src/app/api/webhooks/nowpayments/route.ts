@@ -159,6 +159,43 @@ export async function POST(req: NextRequest) {
               });
             }
           }
+        } else if (product.kind === ProductKind.SPONSOR) {
+          const days = 30;
+
+          if (targetProjectId) {
+            const project = await tx.project.findUnique({
+              where: { id: targetProjectId },
+            });
+
+            if (project) {
+              const currentBoostEnd =
+                project.boostedUntil && project.boostedUntil > new Date()
+                  ? project.boostedUntil
+                  : new Date();
+
+              const newBoostEnd = new Date(
+                currentBoostEnd.getTime() + days * 24 * 60 * 60 * 1000
+              );
+
+              await tx.project.update({
+                where: { id: project.id },
+                data: {
+                  boostedUntil: newBoostEnd,
+                  featured: true,
+                  status: ProjectStatus.APPROVED, // Auto-aprobado y publicado al pagar
+                },
+              });
+
+              await tx.featuredProject.create({
+                data: {
+                  projectId: project.id,
+                  placement: "HOME_HERO",
+                  startsAt: new Date(),
+                  endsAt: newBoostEnd,
+                },
+              });
+            }
+          }
         }
 
         // Garantizar que cualquier proyecto con orden de pago quede publicado

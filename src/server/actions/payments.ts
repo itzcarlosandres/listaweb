@@ -34,16 +34,19 @@ export async function createCryptoCheckout(
       return { success: false, error: "Producto no disponible para compra" };
     }
 
-    // Si es un Boost, verificar que el proyecto pertenezca al usuario
-    if (product.kind === ProductKind.BOOST_7 || product.kind === ProductKind.BOOST_30) {
-      if (!input.projectId) {
-        return { success: false, error: "Debes seleccionar el proyecto que deseas impulsar con el Boost" };
-      }
-      const project = await db.project.findFirst({
-        where: { id: input.projectId, userId: user.id },
-      });
-      if (!project) {
-        return { success: false, error: "Proyecto no encontrado o no te pertenece" };
+    // Si es un Boost o Sponsor, verificar que el proyecto pertenezca al usuario
+    if (
+      product.kind === ProductKind.BOOST_7 ||
+      product.kind === ProductKind.BOOST_30 ||
+      product.kind === ProductKind.SPONSOR
+    ) {
+      if (input.projectId) {
+        const project = await db.project.findFirst({
+          where: { id: input.projectId, userId: user.id },
+        });
+        if (!project) {
+          return { success: false, error: "Proyecto no encontrado o no te pertenece" };
+        }
       }
     }
 
@@ -84,8 +87,8 @@ export async function createCryptoCheckout(
       priceCurrency: product.currency?.toLowerCase() || "usd",
       orderId: `${payment.id}_${order.id}`,
       orderDescription: `LaunchHub: ${product.name} para @${user.username}`,
-      successUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/dashboard?payment=success`,
-      cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000"}/pricing?payment=cancel`,
+      successUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://listaweb.online"}/dashboard/projects?payment=success`,
+      cancelUrl: `${process.env.NEXT_PUBLIC_APP_URL || "https://listaweb.online"}/dashboard/projects?payment=cancel`,
     });
 
     if (!invoiceRes.success || !invoiceRes.data?.invoice_url) {

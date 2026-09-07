@@ -23,11 +23,12 @@ export const projectSubmitSchema = z.object({
     .string()
     .min(120, "La descripción debe tener al menos 120 caracteres para explicar bien el proyecto")
     .max(8000, "La descripción no puede exceder 8000 caracteres"),
-  tags: z.array(z.string()).max(8, "Máximo 8 etiquetas"),
-  technologies: z.array(z.string()).max(10, "Máximo 10 tecnologías"),
+  tags: z.array(z.string()).max(8, "Máximo 8 etiquetas").default([]).optional(),
+  technologies: z.array(z.string()).max(10, "Máximo 10 tecnologías").default([]).optional(),
 
   // Paso 3: Precio y Metadatos
   pricingType: z.nativeEnum(PricingType),
+  paidProductId: z.string().optional(),
   projectType: z.nativeEnum(ProjectType),
   country: z.string().max(2).optional().nullable(),
   launchDate: z.string().optional(),

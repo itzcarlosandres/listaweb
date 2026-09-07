@@ -67,11 +67,11 @@ export function BrandLogo({
       imgH: 24,
     },
     md: {
-      container: "gap-2.5",
-      iconBox: "w-9 h-9 rounded-xl shadow-xs",
-      icon: "w-4.5 h-4.5",
-      text: "text-xl",
-      imgH: 32,
+      container: "gap-2 sm:gap-2.5",
+      iconBox: "w-8 h-8 sm:w-9 sm:h-9 rounded-lg sm:rounded-xl shadow-xs",
+      icon: "w-4 h-4 sm:w-4.5 sm:h-4.5",
+      text: "text-lg sm:text-xl",
+      imgH: 30,
     },
     lg: {
       container: "gap-3",

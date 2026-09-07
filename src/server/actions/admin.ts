@@ -686,12 +686,21 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
 
     const map = new Map(settings.map((s) => [s.key, s.value]));
 
-    const siteName = map.get("SITE_NAME") || "LaunchHub";
-    const siteTagline = map.get("SITE_TAGLINE") || "La plataforma definitiva de lanzamientos en español";
+    const logoCombined = `${map.get("SITE_LOGO_TEXT") || ""}${map.get("SITE_LOGO_TEXT_HIGHLIGHT") || ""}`.trim();
+    const siteName =
+      map.get("SITE_NAME") && map.get("SITE_NAME") !== "LaunchHub"
+        ? map.get("SITE_NAME")!
+        : logoCombined || map.get("SITE_NAME") || "ListaWEB";
+
+    const siteTagline =
+      map.get("SITE_TAGLINE") && !map.get("SITE_TAGLINE")!.toLowerCase().includes("en español")
+        ? map.get("SITE_TAGLINE")!
+        : "The definitive launchpad for tech products and digital startups";
+
     const metaTitle = map.get("SEO_META_TITLE") || `${siteName} — ${siteTagline}`;
     const metaDescription =
       map.get("SEO_META_DESCRIPTION") ||
-      "Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores.";
+      "Explore daily newly launched AI tools, SaaS products, developer apps, and startups built by founders worldwide.";
 
     return {
       siteName,
@@ -699,8 +708,8 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
       siteUrl: map.get("SITE_URL") || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev",
       logoMode: (map.get("SITE_LOGO_MODE") as "image" | "text_icon" | "text") || "text_icon",
       logoIcon: map.get("SITE_LOGO_ICON") || "Rocket",
-      logoText: map.get("SITE_LOGO_TEXT") || "Launch",
-      logoTextHighlight: map.get("SITE_LOGO_TEXT_HIGHLIGHT") || "Hub",
+      logoText: map.get("SITE_LOGO_TEXT") || "Lista",
+      logoTextHighlight: map.get("SITE_LOGO_TEXT_HIGHLIGHT") || "WEB",
       logoIconBg: map.get("SITE_LOGO_ICON_BG") || "#E4572E",
       logoUrl: map.get("SITE_LOGO_URL") || "",
       faviconUrl: map.get("SITE_FAVICON_URL") || "",
@@ -709,7 +718,7 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
       metaDescription,
       metaKeywords:
         map.get("SEO_META_KEYWORDS") ||
-        "saas, startups, herramientas, inteligencia artificial, software, lanzamientos, directorio, creadores",
+        "saas, startups, tools, artificial intelligence, software, launches, directory, creators",
       twitterHandle: map.get("SEO_TWITTER_HANDLE") || "@launchhub",
       googleAnalyticsId: map.get("SEO_GOOGLE_ANALYTICS_ID") || "",
       googleSiteVerification: map.get("SEO_GOOGLE_SITE_VERIFICATION") || "",
@@ -717,24 +726,24 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
     };
   } catch (error) {
     console.error("Error getting general SEO settings:", error);
-    const defaultSiteName = "LaunchHub";
-    const defaultTagline = "La plataforma definitiva de lanzamientos en español";
+    const defaultSiteName = "ListaWEB";
+    const defaultTagline = "The definitive launchpad for tech products and digital startups";
     return {
       siteName: defaultSiteName,
       siteTagline: defaultTagline,
       siteUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev",
       logoMode: "text_icon",
       logoIcon: "Rocket",
-      logoText: "Launch",
-      logoTextHighlight: "Hub",
+      logoText: "Lista",
+      logoTextHighlight: "WEB",
       logoIconBg: "#E4572E",
       logoUrl: "",
       faviconUrl: "",
       ogImageUrl: "",
       metaTitle: `${defaultSiteName} — ${defaultTagline}`,
       metaDescription:
-        "Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores.",
-      metaKeywords: "saas, startups, herramientas, inteligencia artificial, software, lanzamientos, directorio, creadores",
+        "Explore daily newly launched AI tools, SaaS products, developer apps, and startups built by founders worldwide.",
+      metaKeywords: "saas, startups, tools, artificial intelligence, software, launches, directory, creators",
       twitterHandle: "@launchhub",
       googleAnalyticsId: "",
       googleSiteVerification: "",

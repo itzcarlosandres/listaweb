@@ -8,6 +8,19 @@ export async function Footer() {
   const brandSettings = await getGeneralSeoSettings();
   const popularCategories = CATEGORIES_SEED.slice(0, 6);
 
+  const siteBrandName =
+    brandSettings.siteName && brandSettings.siteName !== "LaunchHub"
+      ? brandSettings.siteName
+      : `${brandSettings.logoText || ""}${brandSettings.logoTextHighlight || ""}`.trim() ||
+        brandSettings.siteName ||
+        "ListaWEB";
+
+  const siteTagline =
+    brandSettings.siteTagline &&
+    !brandSettings.siteTagline.toLowerCase().includes("en español")
+      ? brandSettings.siteTagline
+      : "The definitive launchpad for creators, founders, and indie hackers to launch products and gain real community traction.";
+
   return (
     <footer className="border-t border-[#E7E4DB] dark:border-[#2E2B23] bg-white dark:bg-[#16140F] mt-auto">
       {/* Demo Data Banner */}
@@ -34,8 +47,7 @@ export async function Footer() {
               />
             </Link>
             <p className="text-sm text-neutral-600 dark:text-neutral-400 max-w-sm leading-relaxed">
-              {brandSettings.siteTagline ||
-                "The definitive launchpad for creators, founders, and indie hackers to launch products and gain real community traction."}
+              {siteTagline}
             </p>
             <div className="flex items-center gap-3 pt-1">
               <span className="inline-flex items-center gap-1 text-xs text-neutral-500">
@@ -108,7 +120,7 @@ export async function Footer() {
 
         {/* Bottom Bar */}
         <div className="mt-12 pt-8 border-t border-[#E7E4DB]/60 dark:border-[#2E2B23]/60 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-neutral-500">
-          <p>© {new Date().getFullYear()} {brandSettings.siteName || "LaunchHub"} Inc. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {siteBrandName}. All rights reserved.</p>
           <div className="flex items-center gap-6">
             <Link href="/terms" className="hover:text-[#E4572E] transition-colors">
               Terms

@@ -4,11 +4,14 @@ import {
   getCommunityFreeProjects,
   getRankingByPeriod,
   getCategoriesWithCounts,
+  getActiveHomepageSponsors,
 } from "@/server/services/project-service";
 import { HomeLeaderboard } from "@/components/home/HomeLeaderboard";
 import { RankingTabs } from "@/components/home/RankingTabs";
 import { HomeProjectList } from "@/components/home/HomeProjectList";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
+import { HomeHeroSponsor } from "@/components/home/HomeHeroSponsor";
+import { PromotedSidebarProjects } from "@/components/project/PromotedSidebarProjects";
 import {
   Rocket,
   Plus,
@@ -51,7 +54,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 export default async function HomePage() {
-  const [paidProjects, communityProjects, topToday, topWeek, topMonth, categories] =
+  const [paidProjects, communityProjects, topToday, topWeek, topMonth, categories, homepageSponsors] =
     await Promise.all([
       getPaidAndFeaturedProjects(8),
       getCommunityFreeProjects(15),
@@ -59,13 +62,14 @@ export default async function HomePage() {
       getRankingByPeriod("week", 5),
       getRankingByPeriod("month", 5),
       getCategoriesWithCounts(),
+      getActiveHomepageSponsors(),
     ]);
 
   return (
     <div className="space-y-16 sm:space-y-20 pb-20">
       {/* 1. HERO SECTION */}
       <section className="relative pt-12 sm:pt-20 pb-10 overflow-hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
           <div className="max-w-3xl mx-auto text-center space-y-6">
             {/* Tag pill */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full text-xs font-semibold bg-[#E4572E]/10 text-[#E4572E] border border-[#E4572E]/20">
@@ -105,6 +109,9 @@ export default async function HomePage() {
               </Link>
             </div>
           </div>
+
+          {/* 👑 VIP HOMEPAGE SPONSOR SPOTLIGHT (100% CONTAINER WIDTH, MÁXIMO IMPACTO VISUAL) */}
+          <HomeHeroSponsor sponsors={homepageSponsors} />
         </div>
       </section>
 
@@ -126,6 +133,9 @@ export default async function HomePage() {
 
           {/* Columna Derecha (5 cols): Tabs de Ranking & Widget de Destacados */}
           <div className="lg:col-span-5 space-y-6 sticky top-24">
+            {/* 👑 SPONSORS OFICIALES EN SIDEBAR STICKY (SIEMPRE VISIBLES AL HACER SCROLL) */}
+            <PromotedSidebarProjects projects={homepageSponsors} />
+
             <RankingTabs
               todayProjects={topToday}
               weekProjects={topWeek}

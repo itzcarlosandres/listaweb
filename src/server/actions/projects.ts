@@ -8,13 +8,14 @@ import { checkRateLimit } from "@/lib/rate-limit";
 import { createId } from "@paralleldrive/cuid2";
 import { revalidatePath } from "next/cache";
 import type { ActionResponse } from "@/types";
-import { ProjectStatus } from "@prisma/client";
+import { ProjectStatus, PricingType, ProductKind } from "@prisma/client";
 import { sendEmail } from "@/lib/email";
 import { renderProjectSubmittedEmail } from "@/lib/email-templates";
+import { createCryptoCheckout } from "@/server/actions/payments";
 
 export async function createProject(
   input: ProjectSubmitInput
-): Promise<ActionResponse<{ id: string; slug: string }>> {
+): Promise<ActionResponse<{ id: string; slug: string; checkoutUrl?: string }>> {
   try {
     const session = await auth();
     if (!session?.user?.id) {
@@ -26,13 +27,15 @@ export async function createProject(
 
     const userId = session.user.id;
 
-    // Rate limit: 3 publicaciones por hora por usuario
-    const rl = checkRateLimit(`submit:${userId}`, 3, 3 / 3600);
-    if (!rl.success) {
-      return {
-        success: false,
-        error: "Has alcanzado el límite de publicaciones por hora. Inténtalo más tarde.",
-      };
+    // Rate limit: 10 publicaciones por hora por usuario (exento para administradores)
+    if (session.user.role !== "ADMIN") {
+      const rl = checkRateLimit(`submit:${userId}`, 10, 10 / 3600);
+      if (!rl.success) {
+        return {
+          success: false,
+          error: "Has alcanzado el límite de publicaciones por hora. Inténtalo más tarde.",
+        };
+      }
     }
 
     // Anti-bot check: Honeypot & RenderTime >= 3s
@@ -60,10 +63,16 @@ export async function createProject(
       },
     });
 
-    if (user && user.plan === "FREE" && user.role !== "ADMIN" && user._count.projects >= 1) {
+    if (
+      user &&
+      user.plan === "FREE" &&
+      user.role !== "ADMIN" &&
+      user._count.projects >= 1 &&
+      input.pricingType === "FREE"
+    ) {
       return {
         success: false,
-        error: "El Plan Free permite publicar hasta 1 proyecto. Mejora a Plan PRO para publicar proyectos ilimitados y participar en los rankings.",
+        error: "El Plan Free permite publicar hasta 1 proyecto gratuito. Si deseas publicar más proyectos o promocionarlo de inmediato, selecciona la opción de Pago.",
       };
     }
 
@@ -98,6 +107,27 @@ export async function createProject(
     const existingSlug = await db.project.findUnique({ where: { slug: baseSlug } });
     const finalSlug = existingSlug ? `${baseSlug}-${createId().slice(0, 5)}` : baseSlug;
 
+    // Resolver categoryId (soporta tanto CUID ID como slug de categoría)
+    const category = await db.category.findFirst({
+      where: {
+        OR: [
+          { id: categoryId },
+          { slug: categoryId },
+        ],
+      },
+    });
+
+    const finalCategoryId =
+      category?.id ||
+      (await db.category.findFirst({ orderBy: { order: "asc" } }))?.id;
+
+    if (!finalCategoryId) {
+      return {
+        success: false,
+        error: "No se encontró una categoría válida en el sistema",
+      };
+    }
+
     // Si el usuario es PRO o ADMIN, se aprueba automáticamente; si es FREE, pasa a revisión
     const isInstantApproval = user?.plan === "PRO" || user?.role === "ADMIN";
     const initialStatus = isInstantApproval ? ProjectStatus.APPROVED : ProjectStatus.PENDING;
@@ -113,7 +143,7 @@ export async function createProject(
           websiteUrl,
           logoUrl: logoUrl || null,
           screenshots: screenshots || [],
-          categoryId,
+          categoryId: finalCategoryId,
           pricingType,
           projectType,
           country: country || null,
@@ -124,7 +154,7 @@ export async function createProject(
       });
 
       // Conectar / Crear Tags
-      for (const tagText of tags) {
+      for (const tagText of tags || []) {
         const tagSlug = slugify(tagText);
         if (!tagSlug) continue;
 
@@ -140,7 +170,7 @@ export async function createProject(
       }
 
       // Conectar / Crear Tecnologías
-      for (const techText of technologies) {
+      for (const techText of technologies || []) {
         const techSlug = slugify(techText);
         if (!techSlug) continue;
 
@@ -181,15 +211,57 @@ export async function createProject(
       console.error("Error preparing project submission email:", emailErr);
     }
 
+    let checkoutUrl: string | undefined;
+
+    // Si seleccionó Pago, generar de inmediato la factura de NOWPayments para pagar y publicar
+    if (pricingType === PricingType.PAID) {
+      let product = null;
+      if (validated.data.paidProductId) {
+        product = await db.product.findFirst({
+          where: {
+            OR: [
+              { id: validated.data.paidProductId },
+              { slug: validated.data.paidProductId },
+            ],
+            active: true,
+          },
+        });
+      }
+
+      if (!product) {
+        product = await db.product.findFirst({
+          where: {
+            kind: { in: [ProductKind.BOOST_7, ProductKind.BOOST_30, ProductKind.SPONSOR] },
+            active: true,
+          },
+          orderBy: { priceCents: "asc" },
+        });
+      }
+
+      if (product) {
+        const checkoutRes = await createCryptoCheckout({
+          productId: product.id,
+          projectId: project.id,
+        });
+
+        if (checkoutRes.success && checkoutRes.data?.checkoutUrl) {
+          checkoutUrl = checkoutRes.data.checkoutUrl;
+        } else {
+          console.error("Error al generar checkout de pago:", checkoutRes.error);
+        }
+      }
+    }
+
     return {
       success: true,
-      data: { id: project.id, slug: project.slug },
+      data: { id: project.id, slug: project.slug, checkoutUrl },
     };
   } catch (error) {
     console.error("Error al crear proyecto:", error);
+    const errorMsg = error instanceof Error ? error.message : "Ocurrió un error inesperado al publicar el proyecto";
     return {
       success: false,
-      error: "Ocurrió un error inesperado al publicar el proyecto",
+      error: errorMsg,
     };
   }
 }
@@ -250,6 +322,18 @@ export async function updateProject(
       launchDate,
     } = validated.data;
 
+    // Resolver categoryId (soporta tanto CUID ID como slug de categoría)
+    const category = await db.category.findFirst({
+      where: {
+        OR: [
+          { id: categoryId },
+          { slug: categoryId },
+        ],
+      },
+    });
+
+    const finalCategoryId = category?.id || project.categoryId;
+
     // Si el proyecto estaba aprobado y el dueño no admin edita campos sensibles, vuelve a PENDING
     let nextStatus = project.status;
     if (project.status === "APPROVED" && !isAdmin) {
@@ -278,7 +362,7 @@ export async function updateProject(
           websiteUrl,
           logoUrl: logoUrl || null,
           screenshots: screenshots || [],
-          categoryId,
+          categoryId: finalCategoryId,
           pricingType,
           projectType,
           country: country || null,
@@ -288,7 +372,7 @@ export async function updateProject(
       });
 
       // Reconectar Tags
-      for (const tagText of tags) {
+      for (const tagText of tags || []) {
         const tagSlug = slugify(tagText);
         if (!tagSlug) continue;
         const tag = await tx.tag.upsert({
@@ -302,7 +386,7 @@ export async function updateProject(
       }
 
       // Reconectar Tecnologías
-      for (const techText of technologies) {
+      for (const techText of technologies || []) {
         const techSlug = slugify(techText);
         if (!techSlug) continue;
         const tech = await tx.technology.upsert({

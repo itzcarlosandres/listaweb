@@ -16,22 +16,28 @@ import {
   AlertOctagon,
 } from "lucide-react";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
+import { CryptoCheckoutButton } from "@/components/payment/CryptoCheckoutButton";
 import { ProjectStatus } from "@prisma/client";
 
 export default async function UserProjectsPage() {
   const session = await auth();
   const userId = session!.user.id;
 
-  const projects = await db.project.findMany({
-    where: { userId },
-    include: {
-      category: true,
-      tags: { include: { tag: true } },
-    },
-    orderBy: { createdAt: "desc" },
-  });
+  const [projects, boostProduct] = await Promise.all([
+    db.project.findMany({
+      where: { userId },
+      include: {
+        category: true,
+        tags: { include: { tag: true } },
+      },
+      orderBy: { createdAt: "desc" },
+    }),
+    db.product.findFirst({
+      where: { kind: "BOOST_7", active: true },
+    }),
+  ]);
 
-  const getStatusBadge = (status: ProjectStatus, rejectionReason?: string | null) => {
+  const getStatusBadge = (status: ProjectStatus, pricingType?: string, rejectionReason?: string | null) => {
     switch (status) {
       case "APPROVED":
         return (
@@ -44,7 +50,7 @@ export default async function UserProjectsPage() {
         return (
           <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20">
             <Clock className="w-3.5 h-3.5" />
-            In Review
+            {pricingType === "PAID" ? "Payment Pending" : "In Review"}
           </span>
         );
       case "REJECTED":
@@ -125,7 +131,7 @@ export default async function UserProjectsPage() {
                       icon={project.category.icon}
                       size="sm"
                     />
-                    {getStatusBadge(project.status, project.rejectionReason)}
+                    {getStatusBadge(project.status, project.pricingType, project.rejectionReason)}
                   </div>
 
                   <p className="text-xs sm:text-sm text-neutral-600 dark:text-neutral-400 line-clamp-1">
@@ -155,7 +161,16 @@ export default async function UserProjectsPage() {
               </div>
 
               {/* Botones de acción */}
-              <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-[#E7E4DB] dark:border-[#2E2B23]">
+              <div className="flex items-center gap-2 shrink-0 border-t md:border-t-0 pt-3 md:pt-0 border-[#E7E4DB] dark:border-[#2E2B23] flex-wrap">
+                {project.status === "PENDING" && project.pricingType === "PAID" && boostProduct && (
+                  <CryptoCheckoutButton
+                    productId={boostProduct.id}
+                    projectId={project.id}
+                    buttonText="Pay & Publish Now"
+                    className="px-3.5 py-2 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#CE4A24] shadow-xs"
+                  />
+                )}
+
                 {project.status === "APPROVED" && (
                   <Link
                     href={`/project/${project.slug}`}

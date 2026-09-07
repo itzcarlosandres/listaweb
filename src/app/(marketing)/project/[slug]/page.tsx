@@ -1,5 +1,9 @@
 import { notFound } from "next/navigation";
-import { getProjectBySlug, getRelatedProjects } from "@/server/services/project-service";
+import {
+  getProjectBySlug,
+  getRelatedProjects,
+  getPopularPaidProjects,
+} from "@/server/services/project-service";
 import { VoteButton } from "@/components/project/VoteButton";
 import { FavoriteButton } from "@/components/project/FavoriteButton";
 import { ShareButton } from "@/components/project/ShareButton";
@@ -9,14 +13,12 @@ import { ProjectViewTracker } from "@/components/project/ProjectViewTracker";
 import { CategoryBadge } from "@/components/shared/CategoryBadge";
 import { TagChip } from "@/components/shared/TagChip";
 import { TechnologyBadge } from "@/components/shared/TechnologyBadge";
-import { UserAvatar } from "@/components/shared/UserAvatar";
 import { ProjectCard } from "@/components/project/ProjectCard";
+import { PromotedSidebarProjects } from "@/components/project/PromotedSidebarProjects";
 import { CommentSection } from "@/components/comment/CommentSection";
-import { FollowButton } from "@/components/user/FollowButton";
 import Link from "next/link";
 import {
   Calendar,
-  Globe,
   MessageSquare,
   Eye,
   Bookmark,
@@ -61,7 +63,14 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
     notFound();
   }
 
-  const related = await getRelatedProjects(project.categoryId, project.id, 3);
+  const [related, popularPaid] = await Promise.all([
+    getRelatedProjects(project.categoryId, project.id, 3),
+    getPopularPaidProjects(4, project.id),
+  ]);
+
+  const popularPaidIds = new Set(popularPaid.map((p) => p.id));
+  const filteredRelated = related.filter((r) => !popularPaidIds.has(r.id));
+
   const formattedLaunchDate = new Intl.DateTimeFormat("en-US", {
     month: "long",
     day: "numeric",
@@ -252,60 +261,19 @@ export default async function ProjectDetailPage({ params }: ProjectPageProps) {
           />
         </div>
 
-        {/* Columna Derecha: Tarjeta del Creador + Proyectos Relacionados (4 cols) */}
+        {/* Columna Derecha: Proyectos Populares de Pago + Relacionados (4 cols) */}
         <div className="lg:col-span-4 space-y-8 sticky top-24">
-          {/* Tarjeta del Maker */}
-          <div className="p-6 rounded-3xl bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] space-y-4 shadow-xs">
-            <div className="flex items-center justify-between gap-3">
-              <div className="flex items-center gap-3 min-w-0 flex-1">
-                <UserAvatar src={project.user.image} name={project.user.name} size="lg" />
-                <div className="min-w-0 flex-1">
-                  <h3 className="font-display font-bold text-base text-[#17150F] dark:text-[#FAF9F6] truncate">
-                    {project.user.name || project.user.username}
-                  </h3>
-                  <p className="text-xs text-neutral-500 font-mono">@{project.user.username}</p>
-                </div>
-              </div>
-
-              <FollowButton targetUserId={project.user.id} size="sm" />
-            </div>
-
-            {/* Bio */}
-            {project.user.bio && (
-              <p className="text-xs text-neutral-600 dark:text-neutral-400 leading-relaxed">
-                {project.user.bio}
-              </p>
-            )}
-
-            <div className="pt-2 border-t border-[#E7E4DB] dark:border-[#2E2B23] flex items-center justify-between">
-              <Link
-                href={`/user/${project.user.username}`}
-                className="text-xs font-bold text-[#E4572E] hover:underline"
-              >
-                View full profile
-              </Link>
-              {project.user.website && (
-                <a
-                  href={project.user.website}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="text-xs text-neutral-500 hover:text-neutral-900 dark:hover:text-white flex items-center gap-1"
-                >
-                  <Globe className="w-3.5 h-3.5" />
-                  Website
-                </a>
-              )}
-            </div>
-          </div>
+          {/* Proyectos Populares de Pago (Solo los que pagan) */}
+          <PromotedSidebarProjects projects={popularPaid} />
 
           {/* Proyectos Relacionados */}
-          {related.length > 0 && (
+          {filteredRelated.length > 0 && (
             <div className="space-y-4">
               <h3 className="font-display font-bold text-base text-[#17150F] dark:text-[#FAF9F6]">
                 More in {project.category.name}
               </h3>
               <div className="space-y-3">
-                {related.map((rel) => (
+                {filteredRelated.map((rel) => (
                   <ProjectCard key={rel.id} project={rel} />
                 ))}
               </div>

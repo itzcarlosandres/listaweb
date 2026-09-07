@@ -6,7 +6,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { projectSubmitSchema, type ProjectSubmitInput } from "@/schemas/project";
 import { createProject, updateProject } from "@/server/actions/projects";
-import { CATEGORIES_SEED, TECHNOLOGIES_SEED } from "@/lib/constants";
+import { CATEGORIES_SEED } from "@/lib/constants";
 import { ProjectCard } from "@/components/project/ProjectCard";
 import { CategoryIcon } from "@/components/shared/CategoryIcon";
 import {
@@ -19,6 +19,7 @@ import {
   X,
   Loader2,
   Sparkles,
+  Zap,
   Layers,
   FileText,
   DollarSign,
@@ -49,8 +50,6 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
   const [renderTime] = useState(Date.now());
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isUploadingScreenshot, setIsUploadingScreenshot] = useState(false);
-  const [tagInput, setTagInput] = useState("");
-  const [techInput, setTechInput] = useState("");
   const [isCategoryDropdownOpen, setIsCategoryDropdownOpen] = useState(false);
   const categoryDropdownRef = useRef<HTMLDivElement>(null);
 
@@ -81,9 +80,10 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
       logoUrl: "",
       screenshots: [],
       description: "",
-      tags: ["saas", "startup"],
-      technologies: ["Next.js", "TypeScript", "Tailwind CSS"],
+      tags: [],
+      technologies: [],
       pricingType: PricingType.FREE,
+      paidProductId: "boost-7",
       projectType: ProjectType.SAAS,
       country: "US",
       launchDate: new Date().toISOString().slice(0, 10),
@@ -170,48 +170,6 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
     }
   };
 
-  // Add Tag
-  const handleAddTag = () => {
-    const clean = tagInput.trim().toLowerCase().replace(/[^a-z0-9-]/g, "");
-    if (!clean) return;
-    const currentTags = formValues.tags || [];
-    if (currentTags.includes(clean)) return;
-    if (currentTags.length >= 8) {
-      toast.error("Maximum 8 tags allowed");
-      return;
-    }
-    setValue("tags", [...currentTags, clean]);
-    setTagInput("");
-  };
-
-  const handleRemoveTag = (tag: string) => {
-    setValue(
-      "tags",
-      (formValues.tags || []).filter((t) => t !== tag)
-    );
-  };
-
-  // Add Technology
-  const handleAddTech = (techName?: string) => {
-    const val = (techName || techInput).trim();
-    if (!val) return;
-    const currentTechs = formValues.technologies || [];
-    if (currentTechs.includes(val)) return;
-    if (currentTechs.length >= 10) {
-      toast.error("Maximum 10 technologies allowed");
-      return;
-    }
-    setValue("technologies", [...currentTechs, val]);
-    setTechInput("");
-  };
-
-  const handleRemoveTech = (tech: string) => {
-    setValue(
-      "technologies",
-      (formValues.technologies || []).filter((t) => t !== tech)
-    );
-  };
-
   // Validate before step change
   const nextStep = async () => {
     let fieldsToValidate: (keyof ProjectSubmitInput)[] = [];
@@ -253,6 +211,15 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
         if (!isEditing && typeof window !== "undefined") {
           localStorage.removeItem("launchhub_submit_draft");
         }
+
+        // Si se generó factura de pago para un proyecto de pago, redirigir a NOWPayments
+        const checkoutUrl = (res.data as { checkoutUrl?: string })?.checkoutUrl;
+        if (checkoutUrl && typeof checkoutUrl === "string") {
+          toast.success("Proyecto registrado! Redirigiendo a la pasarela de pago seguro...");
+          window.location.href = checkoutUrl;
+          return;
+        }
+
         toast.success(
           isEditing
             ? "Project updated successfully"
@@ -697,114 +664,6 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   <p className="mt-1 text-xs text-red-500">{errors.description.message}</p>
                 )}
               </div>
-
-              {/* Tags Chips Input */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Tags (Max 8)
-                </label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={tagInput}
-                    onChange={(e) => setTagInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddTag();
-                      }
-                    }}
-                    placeholder="e.g. automation"
-                    className="flex-1 px-4 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6]"
-                  />
-                  <button
-                    type="button"
-                    onClick={handleAddTag}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
-                  >
-                    Add Tag
-                  </button>
-                </div>
-                <div className="flex flex-wrap gap-1.5">
-                  {(formValues.tags || []).map((t) => (
-                    <span
-                      key={t}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-mono bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-300"
-                    >
-                      #{t}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTag(t)}
-                        className="hover:text-red-500"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Technologies Input */}
-              <div>
-                <label className="block text-xs font-semibold uppercase tracking-wider text-neutral-600 dark:text-neutral-400 mb-1.5">
-                  Technologies & Tech Stack (Max 10)
-                </label>
-                <div className="flex gap-2 mb-2">
-                  <input
-                    type="text"
-                    value={techInput}
-                    onChange={(e) => setTechInput(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === "Enter") {
-                        e.preventDefault();
-                        handleAddTech();
-                      }
-                    }}
-                    placeholder="e.g. PostgreSQL"
-                    className="flex-1 px-4 py-2 rounded-xl text-xs bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6]"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => handleAddTech()}
-                    className="px-4 py-2 rounded-xl text-xs font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200"
-                  >
-                    Add
-                  </button>
-                </div>
-
-                <div className="flex flex-wrap gap-1.5 mb-2">
-                  {(formValues.technologies || []).map((tech) => (
-                    <span
-                      key={tech}
-                      className="inline-flex items-center gap-1 px-2.5 py-1 rounded-md text-xs font-medium bg-white dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-neutral-700 dark:text-neutral-300"
-                    >
-                      {tech}
-                      <button
-                        type="button"
-                        onClick={() => handleRemoveTech(tech)}
-                        className="hover:text-red-500"
-                      >
-                        <X className="w-3 h-3" />
-                      </button>
-                    </span>
-                  ))}
-                </div>
-
-                {/* Popular suggestions */}
-                <div className="flex items-center gap-1.5 flex-wrap pt-1">
-                  <span className="text-[11px] text-neutral-400">Suggestions:</span>
-                  {TECHNOLOGIES_SEED.slice(0, 8).map((t) => (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => handleAddTech(t)}
-                      className="text-[11px] text-neutral-500 hover:text-[#E4572E] underline decoration-dotted"
-                    >
-                      +{t}
-                    </button>
-                  ))}
-                </div>
-              </div>
             </div>
           </div>
         )}
@@ -829,12 +688,16 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   </label>
                   <select
                     {...register("pricingType")}
+                    onChange={(e) => {
+                      register("pricingType").onChange(e);
+                      if (e.target.value === PricingType.PAID && !formValues.paidProductId) {
+                        setValue("paidProductId", "boost-7");
+                      }
+                    }}
                     className="w-full px-4 py-3 rounded-xl text-sm bg-neutral-50 dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] text-[#17150F] dark:text-[#FAF9F6] focus:outline-none focus:border-[#E4572E]"
                   >
-                    <option value={PricingType.FREE}>Free</option>
-                    <option value={PricingType.FREEMIUM}>Freemium (Free tier + Pro plans)</option>
-                    <option value={PricingType.PAID}>Paid (Paid / Subscription only)</option>
-                    <option value={PricingType.OPEN_SOURCE}>Open Source</option>
+                    <option value={PricingType.FREE}>Gratis (Free — Cola de moderación)</option>
+                    <option value={PricingType.PAID}>Pago (Paid — Impulso VIP y publicación al confirmar)</option>
                   </select>
                 </div>
 
@@ -859,6 +722,102 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
                   </select>
                 </div>
               </div>
+
+              {/* Selector de paquete de impulso si escoge Pago */}
+              {formValues.pricingType === PricingType.PAID && (
+                <div className="p-4.5 rounded-2xl bg-gradient-to-r from-amber-500/5 via-orange-500/5 to-amber-500/5 dark:bg-[#16140F] border border-amber-500/30 space-y-3 animate-in fade-in duration-200">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="w-6 h-6 rounded-lg bg-[#E4572E]/10 text-[#E4572E] flex items-center justify-center font-bold">
+                        <Zap className="w-3.5 h-3.5 fill-current" />
+                      </div>
+                      <span className="text-xs font-bold text-neutral-900 dark:text-white uppercase tracking-wider">
+                        Selecciona tu Paquete de Lanzamiento VIP
+                      </span>
+                    </div>
+                    <span className="text-[11px] font-mono font-bold text-[#E4572E]">
+                      Auto-aprobado al pagar
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {/* Boost 7 Días */}
+                    <button
+                      type="button"
+                      onClick={() => setValue("paidProductId", "boost-7")}
+                      className={`p-4 rounded-2xl border text-left cursor-pointer transition-all ${
+                        formValues.paidProductId === "boost-7" ||
+                        (!formValues.paidProductId ||
+                          (formValues.paidProductId !== "boost-30" && formValues.paidProductId !== "sponsor-home"))
+                          ? "bg-white dark:bg-[#1E1B15] border-[#E4572E] shadow-xs ring-2 ring-[#E4572E]/20"
+                          : "bg-white/60 dark:bg-[#1A1813]/60 border-[#E7E4DB] dark:border-[#2E2B23] opacity-75 hover:opacity-100"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-extrabold text-neutral-900 dark:text-white">
+                            Boost 7 Días
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-[#E4572E] text-white">
+                            POPULAR
+                          </span>
+                        </div>
+                        <span className="text-sm font-mono font-extrabold text-[#E4572E]">$29 USD</span>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1.5 leading-relaxed">
+                        Top del feed por 7 días + Insignia Boost + Aprobación instantánea.
+                      </p>
+                    </button>
+
+                    {/* Boost 30 Días */}
+                    <button
+                      type="button"
+                      onClick={() => setValue("paidProductId", "boost-30")}
+                      className={`p-4 rounded-2xl border text-left cursor-pointer transition-all ${
+                        formValues.paidProductId === "boost-30"
+                          ? "bg-white dark:bg-[#1E1B15] border-[#E4572E] shadow-xs ring-2 ring-[#E4572E]/20"
+                          : "bg-white/60 dark:bg-[#1A1813]/60 border-[#E7E4DB] dark:border-[#2E2B23] opacity-75 hover:opacity-100"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <span className="text-xs font-extrabold text-neutral-900 dark:text-white">
+                          Boost 30 Días
+                        </span>
+                        <span className="text-sm font-mono font-extrabold text-[#E4572E]">$79 USD</span>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1.5 leading-relaxed">
+                        30 días de máxima exposición en el feed + Insignia Boost + Publicación automática.
+                      </p>
+                    </button>
+
+                    {/* Sponsor Homepage */}
+                    <button
+                      type="button"
+                      onClick={() => setValue("paidProductId", "sponsor-home")}
+                      className={`p-4 rounded-2xl border text-left cursor-pointer transition-all ${
+                        formValues.paidProductId === "sponsor-home"
+                          ? "bg-white dark:bg-[#1E1B15] border-[#E4572E] shadow-xs ring-2 ring-[#E4572E]/20"
+                          : "bg-white/60 dark:bg-[#1A1813]/60 border-[#E7E4DB] dark:border-[#2E2B23] opacity-75 hover:opacity-100"
+                      }`}
+                    >
+                      <div className="flex items-center justify-between gap-2">
+                        <div className="flex items-center gap-1.5">
+                          <span className="text-xs font-extrabold text-neutral-900 dark:text-white">
+                            Sponsor Homepage
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-500 text-white">
+                            VIP
+                          </span>
+                        </div>
+                        <span className="text-sm font-mono font-extrabold text-[#E4572E]">$149 USD</span>
+                      </div>
+                      <p className="text-[11px] text-neutral-500 dark:text-neutral-400 mt-1.5 leading-relaxed">
+                        Banner Hero principal por 30 días + Rotación automática + Publicación inmediata.
+                      </p>
+                    </button>
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
@@ -924,19 +883,42 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               </div>
               <div className="flex justify-between py-1">
                 <span className="text-neutral-500">Initial status after submit:</span>
-                <span className="font-semibold text-amber-600 dark:text-amber-400">Pending Approval</span>
+                <span className="font-semibold text-amber-600 dark:text-amber-400">
+                  {formValues.pricingType === PricingType.PAID
+                    ? "Pending Payment (Auto-published upon payment)"
+                    : "Pending Approval (Manual review)"}
+                </span>
               </div>
             </div>
 
-            <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-xs text-emerald-900 dark:text-emerald-300 space-y-1">
-              <div className="flex items-center gap-1.5 font-bold">
-                <Sparkles className="w-4 h-4 text-emerald-600" />
-                <span>100% Free Submission (No Charges)</span>
+            {formValues.pricingType === PricingType.PAID ? (
+              <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/50 text-xs text-amber-900 dark:text-amber-300 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold text-amber-700 dark:text-amber-400">
+                  <Zap className="w-4 h-4 fill-current" />
+                  <span>
+                    Featured Paid Launch —{" "}
+                    {formValues.paidProductId === "sponsor-home"
+                      ? "Sponsor Homepage ($149 USD)"
+                      : formValues.paidProductId === "boost-30"
+                      ? "Boost 30 Days ($79 USD)"
+                      : "Boost 7 Days ($29 USD)"}
+                  </span>
+                </div>
+                <p className="text-amber-800/90 dark:text-amber-300/90 leading-relaxed">
+                  Upon clicking confirm, you will be redirected to the secure crypto checkout via NOWPayments. Once your payment is verified, your project is <strong>automatically published immediately</strong> without waiting for manual review.
+                </p>
               </div>
-              <p className="text-emerald-800/90 dark:text-emerald-300/90 leading-relaxed">
-                No payment or credit card required. Your project enters the moderation queue with <strong>Pending Approval</strong> status and will be verified by our team before going live publicly on LaunchHub.
-              </p>
-            </div>
+            ) : (
+              <div className="p-4 rounded-2xl bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-900/50 text-xs text-emerald-900 dark:text-emerald-300 space-y-1">
+                <div className="flex items-center gap-1.5 font-bold">
+                  <Sparkles className="w-4 h-4 text-emerald-600" />
+                  <span>100% Free Submission (No Charges)</span>
+                </div>
+                <p className="text-emerald-800/90 dark:text-emerald-300/90 leading-relaxed">
+                  No payment or credit card required. Your project enters the moderation queue with <strong>Pending Approval</strong> status and will be verified by our team before going live publicly on LaunchHub.
+                </p>
+              </div>
+            )}
           </div>
         )}
 
@@ -973,12 +955,33 @@ export function ProjectSubmitWizard({ initialData, isEditing = false }: ProjectS
               {isPending ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  {isEditing ? "Updating..." : "Publishing..."}
+                  {isEditing
+                    ? "Updating..."
+                    : formValues.pricingType === PricingType.PAID
+                    ? "Generating invoice..."
+                    : "Submitting..."}
                 </>
               ) : (
                 <>
-                  <Rocket className="w-4 h-4" />
-                  {isEditing ? "Save Changes" : "Confirm & Submit for Free"}
+                  {formValues.pricingType === PricingType.PAID ? (
+                    <>
+                      <Zap className="w-4 h-4 fill-current" />
+                      {isEditing
+                        ? "Save & Proceed to Payment"
+                        : `Proceed to Payment & Publish (${
+                            formValues.paidProductId === "sponsor-home"
+                              ? "$149 USD"
+                              : formValues.paidProductId === "boost-30"
+                              ? "$79 USD"
+                              : "$29 USD"
+                          })`}
+                    </>
+                  ) : (
+                    <>
+                      <Rocket className="w-4 h-4" />
+                      {isEditing ? "Save Changes" : "Confirm & Submit for Free"}
+                    </>
+                  )}
                 </>
               )}
             </button>

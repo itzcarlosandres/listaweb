@@ -111,17 +111,27 @@ export function SearchBarModal() {
 
   return (
     <>
-      {/* Trigger Button in Navbar */}
+      {/* Mobile Icon Trigger (< sm) */}
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="flex items-center justify-between w-full max-w-[220px] lg:max-w-[260px] px-3 py-1.5 text-xs text-neutral-500 dark:text-neutral-400 bg-[#FAF9F6] dark:bg-[#17150F] border border-[#E7E4DB] dark:border-[#2E2B23] rounded-xl hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors shadow-xs group"
+        aria-label="Search products"
+        className="sm:hidden w-8 h-8 flex items-center justify-center rounded-xl text-neutral-600 dark:text-neutral-300 hover:text-[#E4572E] hover:border-[#E4572E] bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] transition-colors shadow-2xs shrink-0 cursor-pointer"
+      >
+        <Search className="w-3.5 h-3.5" />
+      </button>
+
+      {/* Desktop Pill Trigger (sm:+) */}
+      <button
+        type="button"
+        onClick={() => setOpen(true)}
+        className="hidden sm:flex items-center justify-between w-[180px] lg:w-[230px] px-3 py-1.5 text-xs text-neutral-500 dark:text-neutral-400 bg-white dark:bg-[#1A1813] border border-[#E7E4DB] dark:border-[#2E2B23] rounded-xl hover:border-neutral-400 dark:hover:border-neutral-600 transition-colors shadow-2xs group shrink-0 cursor-pointer"
       >
         <div className="flex items-center gap-2">
           <Search className="w-3.5 h-3.5 text-neutral-400 group-hover:text-primary transition-colors" />
           <span className="truncate">Search products...</span>
         </div>
-        <kbd className="hidden sm:inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-neutral-500 bg-white dark:bg-[#1E1C16] border border-[#E7E4DB] dark:border-[#2E2B23] rounded-md">
+        <kbd className="inline-flex items-center gap-0.5 px-1.5 py-0.5 text-[10px] font-mono font-medium text-neutral-500 bg-[#FAF9F6] dark:bg-[#12110D] border border-[#E7E4DB] dark:border-[#2E2B23] rounded-md">
           <span className="text-xs">⌘</span>K
         </kbd>
       </button>
