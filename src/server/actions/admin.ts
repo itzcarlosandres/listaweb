@@ -686,10 +686,17 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
 
     const map = new Map(settings.map((s) => [s.key, s.value]));
 
+    const siteName = map.get("SITE_NAME") || "LaunchHub";
+    const siteTagline = map.get("SITE_TAGLINE") || "La plataforma definitiva de lanzamientos en español";
+    const metaTitle = map.get("SEO_META_TITLE") || `${siteName} — ${siteTagline}`;
+    const metaDescription =
+      map.get("SEO_META_DESCRIPTION") ||
+      "Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores.";
+
     return {
-      siteName: map.get("SITE_NAME") || "LaunchHub",
-      siteTagline: map.get("SITE_TAGLINE") || "La plataforma definitiva de lanzamientos en español",
-      siteUrl: map.get("SITE_URL") || process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
+      siteName,
+      siteTagline,
+      siteUrl: map.get("SITE_URL") || process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev",
       logoMode: (map.get("SITE_LOGO_MODE") as "image" | "text_icon" | "text") || "text_icon",
       logoIcon: map.get("SITE_LOGO_ICON") || "Rocket",
       logoText: map.get("SITE_LOGO_TEXT") || "Launch",
@@ -698,10 +705,8 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
       logoUrl: map.get("SITE_LOGO_URL") || "",
       faviconUrl: map.get("SITE_FAVICON_URL") || "",
       ogImageUrl: map.get("SITE_OG_IMAGE_URL") || "",
-      metaTitle: map.get("SEO_META_TITLE") || "LaunchHub — Descubre lo que están construyendo",
-      metaDescription:
-        map.get("SEO_META_DESCRIPTION") ||
-        "Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores.",
+      metaTitle,
+      metaDescription,
       metaKeywords:
         map.get("SEO_META_KEYWORDS") ||
         "saas, startups, herramientas, inteligencia artificial, software, lanzamientos, directorio, creadores",
@@ -712,10 +717,12 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
     };
   } catch (error) {
     console.error("Error getting general SEO settings:", error);
+    const defaultSiteName = "LaunchHub";
+    const defaultTagline = "La plataforma definitiva de lanzamientos en español";
     return {
-      siteName: "LaunchHub",
-      siteTagline: "La plataforma definitiva de lanzamientos en español",
-      siteUrl: "http://localhost:3000",
+      siteName: defaultSiteName,
+      siteTagline: defaultTagline,
+      siteUrl: process.env.NEXT_PUBLIC_APP_URL || process.env.NEXTAUTH_URL || "https://launchhub.dev",
       logoMode: "text_icon",
       logoIcon: "Rocket",
       logoText: "Launch",
@@ -724,7 +731,7 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
       logoUrl: "",
       faviconUrl: "",
       ogImageUrl: "",
-      metaTitle: "LaunchHub — Descubre lo que están construyendo",
+      metaTitle: `${defaultSiteName} — ${defaultTagline}`,
       metaDescription:
         "Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores.",
       metaKeywords: "saas, startups, herramientas, inteligencia artificial, software, lanzamientos, directorio, creadores",
@@ -743,23 +750,23 @@ export async function updateGeneralSeoSettings(
     const admin = await requireAdmin();
 
     const pairs: [string, string][] = [
-      ["SITE_NAME", input.siteName.trim()],
-      ["SITE_TAGLINE", input.siteTagline.trim()],
-      ["SITE_URL", input.siteUrl.trim()],
+      ["SITE_NAME", (input.siteName ?? "LaunchHub").trim()],
+      ["SITE_TAGLINE", (input.siteTagline ?? "").trim()],
+      ["SITE_URL", (input.siteUrl ?? "").trim()],
       ["SITE_LOGO_MODE", input.logoMode || "text_icon"],
       ["SITE_LOGO_ICON", input.logoIcon || "Rocket"],
-      ["SITE_LOGO_TEXT", input.logoText.trim()],
-      ["SITE_LOGO_TEXT_HIGHLIGHT", input.logoTextHighlight.trim()],
+      ["SITE_LOGO_TEXT", (input.logoText ?? "").trim()],
+      ["SITE_LOGO_TEXT_HIGHLIGHT", (input.logoTextHighlight ?? "").trim()],
       ["SITE_LOGO_ICON_BG", input.logoIconBg || "#E4572E"],
-      ["SITE_LOGO_URL", input.logoUrl.trim()],
-      ["SITE_FAVICON_URL", input.faviconUrl.trim()],
-      ["SITE_OG_IMAGE_URL", input.ogImageUrl.trim()],
-      ["SEO_META_TITLE", input.metaTitle.trim()],
-      ["SEO_META_DESCRIPTION", input.metaDescription.trim()],
-      ["SEO_META_KEYWORDS", input.metaKeywords.trim()],
-      ["SEO_TWITTER_HANDLE", input.twitterHandle.trim()],
-      ["SEO_GOOGLE_ANALYTICS_ID", input.googleAnalyticsId.trim()],
-      ["SEO_GOOGLE_SITE_VERIFICATION", input.googleSiteVerification.trim()],
+      ["SITE_LOGO_URL", (input.logoUrl ?? "").trim()],
+      ["SITE_FAVICON_URL", (input.faviconUrl ?? "").trim()],
+      ["SITE_OG_IMAGE_URL", (input.ogImageUrl ?? "").trim()],
+      ["SEO_META_TITLE", (input.metaTitle ?? "").trim()],
+      ["SEO_META_DESCRIPTION", (input.metaDescription ?? "").trim()],
+      ["SEO_META_KEYWORDS", (input.metaKeywords ?? "").trim()],
+      ["SEO_TWITTER_HANDLE", (input.twitterHandle ?? "").trim()],
+      ["SEO_GOOGLE_ANALYTICS_ID", (input.googleAnalyticsId ?? "").trim()],
+      ["SEO_GOOGLE_SITE_VERIFICATION", (input.googleSiteVerification ?? "").trim()],
       ["SEO_ALLOW_INDEXING", input.allowIndexing ? "true" : "false"],
     ];
 
@@ -778,7 +785,7 @@ export async function updateGeneralSeoSettings(
           action: AdminActionType.EDIT,
           targetType: "SYSTEM_SETTING",
           targetId: "SEO_BRANDING",
-          detail: `Configuración de Marca, Logo (Modo: ${input.logoMode}) y SEO actualizada (Sitio: ${input.siteName}, Indexación: ${
+          detail: `Configuración de Marca, Logo (Modo: ${input.logoMode}) y SEO actualizada (Sitio: ${input.siteName || "LaunchHub"}, Indexación: ${
             input.allowIndexing ? "ACTIVA" : "BLOQUEADA"
           })`,
         },
@@ -790,6 +797,9 @@ export async function updateGeneralSeoSettings(
     revalidatePath("/(marketing)", "layout");
     revalidatePath("/admin", "layout");
     revalidatePath("/(auth)", "layout");
+    revalidatePath("/");
+    revalidatePath("/sitemap.xml");
+    revalidatePath("/robots.txt");
 
     return { success: true };
   } catch (error: unknown) {

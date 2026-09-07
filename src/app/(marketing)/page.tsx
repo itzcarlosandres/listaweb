@@ -20,7 +20,33 @@ import {
   Zap,
 } from "lucide-react";
 
+import type { Metadata } from "next";
+import { getGeneralSeoSettings } from "@/server/actions/admin";
+
 export const revalidate = 60; // 60 segundos de caché para rankings
+
+export async function generateMetadata(): Promise<Metadata> {
+  const seo = await getGeneralSeoSettings();
+  const title = seo.metaTitle || `${seo.siteName} — ${seo.siteTagline}`;
+  const description =
+    seo.metaDescription ||
+    "Explora diariamente nuevas herramientas de IA, SaaS, aplicaciones y startups creadas por desarrolladores y emprendedores.";
+
+  return {
+    title,
+    description,
+    openGraph: {
+      title,
+      description,
+      images: seo.ogImageUrl ? [{ url: seo.ogImageUrl }] : [],
+    },
+    twitter: {
+      title,
+      description,
+      images: seo.ogImageUrl ? [seo.ogImageUrl] : [],
+    },
+  };
+}
 
 export default async function HomePage() {
   const [paidProjects, communityProjects, topToday, topWeek, topMonth, categories] =

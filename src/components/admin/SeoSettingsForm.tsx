@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useTransition } from "react";
+import { useRouter } from "next/navigation";
 import { updateGeneralSeoSettings, type GeneralSeoSettingsInput } from "@/server/actions/admin";
 import {
   Globe,
@@ -85,6 +86,7 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
   });
 
   const [isPending, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -92,6 +94,7 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
       const res = await updateGeneralSeoSettings(settings);
       if (res.success) {
         toast.success("Configuración de Marca, Logo y SEO guardada con éxito");
+        router.refresh();
       } else {
         toast.error(res.error || "Error al guardar configuración");
       }
@@ -558,9 +561,52 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
 
         {/* SECTION 2: SEO Meta Tags */}
         <div className="space-y-4 pt-4 border-t border-[#E8E5DC]/60 dark:border-[#25221B]/60">
-          <div className="flex items-center gap-2 text-xs font-bold font-heading uppercase tracking-wider text-neutral-900 dark:text-white">
-            <Search className="w-4 h-4 text-[#E4572E]" />
-            <span>2. Metadatos SEO Globales (Google / Buscadores)</span>
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2 text-xs font-bold font-heading uppercase tracking-wider text-neutral-900 dark:text-white">
+              <Search className="w-4 h-4 text-[#E4572E]" />
+              <span>2. Metadatos SEO Globales (Google / Buscadores)</span>
+            </div>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="px-4 py-2 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#E4572E]/90 transition-all inline-flex items-center gap-2 shadow-xs disabled:opacity-60 cursor-pointer shrink-0"
+            >
+              {isPending ? (
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Save className="w-3.5 h-3.5" />
+              )}
+              Guardar Cambios SEO
+            </button>
+          </div>
+
+          {/* Brand Name and Tagline */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                Nombre Oficial de la Plataforma
+              </label>
+              <input
+                type="text"
+                value={settings.siteName || ""}
+                onChange={(e) => setSettings({ ...settings, siteName: e.target.value })}
+                placeholder="Ej. ListaWEB o LaunchHub"
+                className="w-full px-3.5 py-2 text-xs bg-neutral-50 dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white font-medium"
+              />
+            </div>
+
+            <div className="space-y-1.5">
+              <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                Eslogan / Tagline del Sitio
+              </label>
+              <input
+                type="text"
+                value={settings.siteTagline || ""}
+                onChange={(e) => setSettings({ ...settings, siteTagline: e.target.value })}
+                placeholder="Ej. Descubre lo que están construyendo"
+                className="w-full px-3.5 py-2 text-xs bg-neutral-50 dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
+              />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -670,6 +716,24 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               </span>
             </label>
           </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-2">
+            <p className="text-[11px] text-neutral-500">
+              Los cambios en el Meta Title y Description se aplican automáticamente a la página de inicio y a toda la web.
+            </p>
+            <button
+              type="submit"
+              disabled={isPending}
+              className="px-5 py-2 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#E4572E]/90 transition-all inline-flex items-center gap-2 shadow-xs disabled:opacity-60 cursor-pointer shrink-0"
+            >
+              {isPending ? (
+                <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Save className="w-3.5 h-3.5" />
+              )}
+              Guardar Cambios SEO
+            </button>
+          </div>
         </div>
 
         {/* SECTION 3: Google SERP Live Preview */}
@@ -752,6 +816,25 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               />
             </div>
           </div>
+        </div>
+
+        {/* Bottom Sticky-style Action Bar */}
+        <div className="pt-4 border-t border-[#E8E5DC]/80 dark:border-[#25221B]/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+          <p className="text-xs text-neutral-500">
+            Guarda tus cambios para que se actualice el logo, favicon, título y descripción SEO en vivo.
+          </p>
+          <button
+            type="submit"
+            disabled={isPending}
+            className="px-6 py-2.5 rounded-xl text-xs font-bold bg-[#E4572E] text-white hover:bg-[#E4572E]/90 transition-all inline-flex items-center gap-2 shadow-xs disabled:opacity-60 cursor-pointer shrink-0"
+          >
+            {isPending ? (
+              <span className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <Save className="w-3.5 h-3.5" />
+            )}
+            Guardar Todos los Cambios SEO
+          </button>
         </div>
       </div>
     </form>
