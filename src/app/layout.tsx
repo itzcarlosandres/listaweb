@@ -89,7 +89,9 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const seo = await getGeneralSeoSettings();
-  const faviconHref = seo.faviconUrl || "/favicon.ico";
+  const faviconHref = seo.faviconUrl
+    ? (seo.faviconUrl.includes("?") ? seo.faviconUrl : `${seo.faviconUrl}?v=1`)
+    : "/favicon.ico";
 
   return (
     <html

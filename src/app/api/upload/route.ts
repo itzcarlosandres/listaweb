@@ -1,5 +1,7 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/lib/auth";
+import { db } from "@/lib/db";
+import { revalidatePath } from "next/cache";
 import { createId } from "@paralleldrive/cuid2";
 import fs from "fs/promises";
 import path from "path";
@@ -62,6 +64,30 @@ export async function POST(request: Request) {
     await fs.writeFile(filePath, buffer);
 
     const publicUrl = `/uploads/${filename}`;
+
+    const isFavicon = formData.get("isFavicon") === "true";
+    if (isFavicon) {
+      try {
+        const publicFaviconPath = path.join(process.cwd(), "public", "favicon.ico");
+        await fs.writeFile(publicFaviconPath, buffer);
+      } catch (err) {
+        console.warn("No se pudo sobrescribir public/favicon.ico:", err);
+      }
+
+      try {
+        await db.systemSetting.upsert({
+          where: { key: "SITE_FAVICON_URL" },
+          update: { value: publicUrl },
+          create: { key: "SITE_FAVICON_URL", value: publicUrl, description: "Configuración SEO y Marca: SITE_FAVICON_URL" },
+        });
+        revalidatePath("/", "layout");
+        revalidatePath("/(marketing)", "layout");
+        revalidatePath("/admin", "layout");
+        revalidatePath("/admin/settings");
+      } catch (err) {
+        console.warn("No se pudo guardar SITE_FAVICON_URL en BD:", err);
+      }
+    }
 
     return NextResponse.json({
       success: true,

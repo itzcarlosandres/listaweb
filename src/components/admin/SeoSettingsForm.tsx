@@ -99,13 +99,21 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
   const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
   const [logoPreview, setLogoPreview] = useState<string | null>(null);
   const [ogPreview, setOgPreview] = useState<string | null>(null);
+  const [faviconError, setFaviconError] = useState(false);
+  const [logoError, setLogoError] = useState(false);
+  const [ogError, setOgError] = useState(false);
   const router = useRouter();
 
   const handleFileUpload = async (
     file: File,
     field: "faviconUrl" | "logoUrl" | "ogImageUrl"
   ) => {
-    // 1. Generar vista previa local inmediata con DataURL (infalible, sin depender de red)
+    // 1. Reset error state
+    if (field === "faviconUrl") setFaviconError(false);
+    else if (field === "logoUrl") setLogoError(false);
+    else setOgError(false);
+
+    // 2. Generar vista previa local inmediata con DataURL (infalible, sin depender de red)
     const reader = new FileReader();
     reader.onload = (e) => {
       const dataUrl = e.target?.result as string;
@@ -701,12 +709,18 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               <div className="flex items-center gap-3">
                 {/* Preview del Favicon */}
                 <div className="w-11 h-11 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                  {(faviconPreview || settings.faviconUrl) ? (
+                  {faviconError ? (
+                    <div className="flex flex-col items-center justify-center text-center p-0.5" title="No se pudo cargar la imagen. Sube un archivo PNG o ICO válido.">
+                      <Sparkles className="w-4 h-4 text-amber-500" />
+                      <span className="text-[8px] font-bold text-amber-600 dark:text-amber-400 leading-tight">ICO</span>
+                    </div>
+                  ) : (faviconPreview || settings.faviconUrl) ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
                       src={faviconPreview || settings.faviconUrl}
                       alt="Favicon preview"
                       className="w-6 h-6 object-contain"
+                      onError={() => setFaviconError(true)}
                     />
                   ) : (
                     <Globe className="w-5 h-5 text-neutral-400" />
@@ -744,6 +758,7 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                     type="button"
                     onClick={() => {
                       setFaviconPreview(null);
+                      setFaviconError(false);
                       setSettings({ ...settings, faviconUrl: "" });
                     }}
                     className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
@@ -759,6 +774,7 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                 value={settings.faviconUrl || ""}
                 onChange={(e) => {
                   setFaviconPreview(null);
+                  setFaviconError(false);
                   setSettings({ ...settings, faviconUrl: e.target.value });
                 }}
                 placeholder="/favicon.ico o https://tusitio.com/favicon.ico"
