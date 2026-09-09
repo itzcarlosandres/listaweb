@@ -2,7 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { updateGeneralSeoSettings, type GeneralSeoSettingsInput } from "@/server/actions/admin";
+import {
+  updateGeneralSeoSettings,
+  uploadBrandAsset,
+  type GeneralSeoSettingsInput,
+} from "@/server/actions/admin";
 import {
   Globe,
   Sparkles,
@@ -92,41 +96,58 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
   const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [isUploadingOgImage, setIsUploadingOgImage] = useState(false);
+  const [faviconPreview, setFaviconPreview] = useState<string | null>(null);
+  const [logoPreview, setLogoPreview] = useState<string | null>(null);
+  const [ogPreview, setOgPreview] = useState<string | null>(null);
   const router = useRouter();
 
   const handleFileUpload = async (
     file: File,
     field: "faviconUrl" | "logoUrl" | "ogImageUrl"
   ) => {
-    if (field === "faviconUrl") setIsUploadingFavicon(true);
-    else if (field === "logoUrl") setIsUploadingLogo(true);
-    else setIsUploadingOgImage(true);
+    // Generar vista previa instantánea en el cliente
+    const localUrl = URL.createObjectURL(file);
+    if (field === "faviconUrl") {
+      setFaviconPreview(localUrl);
+      setIsUploadingFavicon(true);
+    } else if (field === "logoUrl") {
+      setLogoPreview(localUrl);
+      setIsUploadingLogo(true);
+    } else {
+      setOgPreview(localUrl);
+      setIsUploadingOgImage(true);
+    }
 
     try {
       const formData = new FormData();
       formData.append("file", file);
+      if (field === "faviconUrl") {
+        formData.append("isFavicon", "true");
+      }
 
-      const res = await fetch("/api/upload", {
-        method: "POST",
-        body: formData,
-      });
+      const res = await uploadBrandAsset(formData);
 
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.error || "Error al subir el archivo");
+      if (!res.success || !res.url) {
+        toast.error(res.error || "Error al subir el archivo");
+        if (field === "faviconUrl") setFaviconPreview(null);
+        else if (field === "logoUrl") setLogoPreview(null);
+        else setOgPreview(null);
         return;
       }
 
-      setSettings((prev) => ({ ...prev, [field]: data.url }));
+      setSettings((prev) => ({ ...prev, [field]: res.url }));
       toast.success(
         field === "faviconUrl"
-          ? "Favicon subido con éxito"
+          ? "Favicon subido y actualizado correctamente"
           : field === "logoUrl"
-          ? "Logotipo subido con éxito"
-          : "Imagen OG subida con éxito"
+          ? "Logotipo subido correctamente"
+          : "Imagen OG subida correctamente"
       );
     } catch {
-      toast.error("Error de red al subir el archivo");
+      toast.error("Error al procesar la subida del archivo");
+      if (field === "faviconUrl") setFaviconPreview(null);
+      else if (field === "logoUrl") setLogoPreview(null);
+      else setOgPreview(null);
     } finally {
       if (field === "faviconUrl") setIsUploadingFavicon(false);
       else if (field === "logoUrl") setIsUploadingLogo(false);
@@ -414,12 +435,13 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                 <div className="flex items-center gap-3">
                   {/* Preview */}
                   <div className="h-11 px-3 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 min-w-[44px] shadow-2xs">
-                    {settings.logoUrl ? (
+                    {(logoPreview || settings.logoUrl) ? (
                       // eslint-disable-next-line @next/next/no-img-element
                       <img
-                        src={settings.logoUrl}
+                        src={logoPreview || settings.logoUrl}
                         alt="Logo Preview"
                         className="h-7 max-w-[120px] object-contain"
+                        onError={() => setLogoPreview(null)}
                       />
                     ) : (
                       <ImageIcon className="w-5 h-5 text-neutral-400" />
@@ -446,15 +468,19 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                       onChange={(e) => {
                         const file = e.target.files?.[0];
                         if (file) handleFileUpload(file, "logoUrl");
+                        e.target.value = "";
                       }}
                       className="hidden"
                     />
                   </label>
 
-                  {settings.logoUrl && (
+                  {(logoPreview || settings.logoUrl) && (
                     <button
                       type="button"
-                      onClick={() => setSettings({ ...settings, logoUrl: "" })}
+                      onClick={() => {
+                        setLogoPreview(null);
+                        setSettings({ ...settings, logoUrl: "" });
+                      }}
                       className="p-2 rounded-xl text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                       title="Quitar Logo"
                     >
@@ -639,12 +665,13 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               <div className="flex items-center gap-3">
                 {/* Preview del Favicon */}
                 <div className="w-11 h-11 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                  {settings.faviconUrl ? (
+                  {(faviconPreview || settings.faviconUrl) ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={settings.faviconUrl}
+                      src={faviconPreview || settings.faviconUrl}
                       alt="Favicon preview"
                       className="w-6 h-6 object-contain"
+                      onError={() => setFaviconPreview(null)}
                     />
                   ) : (
                     <Globe className="w-5 h-5 text-neutral-400" />
@@ -671,15 +698,19 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleFileUpload(file, "faviconUrl");
+                      e.target.value = "";
                     }}
                     className="hidden"
                   />
                 </label>
 
-                {settings.faviconUrl && (
+                {(faviconPreview || settings.faviconUrl) && (
                   <button
                     type="button"
-                    onClick={() => setSettings({ ...settings, faviconUrl: "" })}
+                    onClick={() => {
+                      setFaviconPreview(null);
+                      setSettings({ ...settings, faviconUrl: "" });
+                    }}
                     className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                     title="Quitar Favicon"
                   >
@@ -691,7 +722,10 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               <input
                 type="text"
                 value={settings.faviconUrl || ""}
-                onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
+                onChange={(e) => {
+                  setFaviconPreview(null);
+                  setSettings({ ...settings, faviconUrl: e.target.value });
+                }}
                 placeholder="/favicon.ico o https://tusitio.com/favicon.ico"
                 className="w-full px-3.5 py-2 text-xs font-mono bg-white dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
               />
@@ -710,12 +744,13 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               <div className="flex items-center gap-3">
                 {/* Preview de OG */}
                 <div className="h-11 w-16 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
-                  {settings.ogImageUrl ? (
+                  {(ogPreview || settings.ogImageUrl) ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img
-                      src={settings.ogImageUrl}
+                      src={ogPreview || settings.ogImageUrl}
                       alt="OG preview"
                       className="w-full h-full object-cover"
+                      onError={() => setOgPreview(null)}
                     />
                   ) : (
                     <ImageIcon className="w-5 h-5 text-neutral-400" />
@@ -742,15 +777,19 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                     onChange={(e) => {
                       const file = e.target.files?.[0];
                       if (file) handleFileUpload(file, "ogImageUrl");
+                      e.target.value = "";
                     }}
                     className="hidden"
                   />
                 </label>
 
-                {settings.ogImageUrl && (
+                {(ogPreview || settings.ogImageUrl) && (
                   <button
                     type="button"
-                    onClick={() => setSettings({ ...settings, ogImageUrl: "" })}
+                    onClick={() => {
+                      setOgPreview(null);
+                      setSettings({ ...settings, ogImageUrl: "" });
+                    }}
                     className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
                     title="Quitar Imagen OG"
                   >
@@ -762,7 +801,10 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
               <input
                 type="text"
                 value={settings.ogImageUrl || ""}
-                onChange={(e) => setSettings({ ...settings, ogImageUrl: e.target.value })}
+                onChange={(e) => {
+                  setOgPreview(null);
+                  setSettings({ ...settings, ogImageUrl: e.target.value });
+                }}
                 placeholder="/og-image.jpg o https://tusitio.com/og.jpg"
                 className="w-full px-3.5 py-2 text-xs font-mono bg-white dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
               />

@@ -4,6 +4,9 @@ import { auth } from "@/lib/auth";
 import { db } from "@/lib/db";
 import { revalidatePath } from "next/cache";
 import type { ActionResponse } from "@/types";
+import fs from "fs/promises";
+import path from "path";
+import { createId } from "@paralleldrive/cuid2";
 import {
   Role,
   Plan,
@@ -801,6 +804,19 @@ export async function updateGeneralSeoSettings(
       });
     });
 
+    // Si se configuró un favicon local, sincronizar con public/favicon.ico
+    if (input.faviconUrl && input.faviconUrl.startsWith("/uploads/")) {
+      try {
+        const cleanName = input.faviconUrl.replace(/^\/uploads\//, "").split("?")[0];
+        const sourcePath = path.join(process.cwd(), "public", "uploads", cleanName);
+        const destPath = path.join(process.cwd(), "public", "favicon.ico");
+        const fileData = await fs.readFile(sourcePath);
+        await fs.writeFile(destPath, fileData);
+      } catch (e) {
+        console.warn("No se pudo sincronizar public/favicon.ico:", e);
+      }
+    }
+
     revalidatePath("/admin/settings");
     revalidatePath("/", "layout");
     revalidatePath("/(marketing)", "layout");
@@ -915,5 +931,57 @@ export async function sendTestEmailAction(targetEmail: string): Promise<ActionRe
   }
 }
 
+export async function uploadBrandAsset(formData: FormData): Promise<{
+  success: boolean;
+  url?: string;
+  error?: string;
+}> {
+  try {
+    await requireAdmin();
 
+    const file = formData.get("file") as File | null;
+    const isFavicon = formData.get("isFavicon") === "true";
 
+    if (!file) {
+      return { success: false, error: "No se proporcionó ningún archivo" };
+    }
+
+    const ext = (file.name.split(".").pop() || "png").toLowerCase();
+    const allowedExtensions = ["ico", "png", "svg", "webp", "jpg", "jpeg", "gif"];
+    if (!allowedExtensions.includes(ext)) {
+      return {
+        success: false,
+        error: "Formato no permitido. Utiliza archivos .ico, .png, .svg, .webp o .jpg",
+      };
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      return { success: false, error: "El archivo no debe exceder 5MB" };
+    }
+
+    const buffer = Buffer.from(await file.arrayBuffer());
+    const uploadsDir = path.join(process.cwd(), "public", "uploads");
+    await fs.mkdir(uploadsDir, { recursive: true });
+
+    const filename = `${createId()}.${ext}`;
+    const filePath = path.join(uploadsDir, filename);
+    await fs.writeFile(filePath, buffer);
+
+    const publicUrl = `/uploads/${filename}`;
+
+    // Si es un favicon, sincronizarlo inmediatamente con public/favicon.ico
+    if (isFavicon) {
+      try {
+        const publicFaviconPath = path.join(process.cwd(), "public", "favicon.ico");
+        await fs.writeFile(publicFaviconPath, buffer);
+      } catch (err) {
+        console.warn("No se pudo sobrescribir public/favicon.ico:", err);
+      }
+    }
+
+    return { success: true, url: publicUrl };
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Error al procesar archivo";
+    return { success: false, error: message };
+  }
+}

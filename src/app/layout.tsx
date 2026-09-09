@@ -50,12 +50,11 @@ export async function generateMetadata(): Promise<Metadata> {
     description,
     keywords,
     metadataBase: new URL(normalizedUrl),
-    icons: seo.faviconUrl
-      ? {
-          icon: seo.faviconUrl,
-          shortcut: seo.faviconUrl,
-        }
-      : undefined,
+    icons: {
+      icon: seo.faviconUrl || "/favicon.ico",
+      shortcut: seo.faviconUrl || "/favicon.ico",
+      apple: seo.faviconUrl || "/favicon.ico",
+    },
     openGraph: {
       title,
       description,
@@ -90,6 +89,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const seo = await getGeneralSeoSettings();
+  const faviconHref = seo.faviconUrl || "/favicon.ico";
 
   return (
     <html
@@ -97,6 +97,11 @@ export default async function RootLayout({
       suppressHydrationWarning
       className={`${bricolage.variable} ${instrument.variable} ${jetbrains.variable} h-full antialiased`}
     >
+      <head>
+        <link rel="icon" href={faviconHref} sizes="any" />
+        <link rel="shortcut icon" href={faviconHref} />
+        <link rel="apple-touch-icon" href={faviconHref} />
+      </head>
       <body className="min-h-full flex flex-col bg-[#FAF9F6] dark:bg-[#12110D] text-[#17150F] dark:text-[#FAF9F6]">
         <Providers>{children}</Providers>
 
