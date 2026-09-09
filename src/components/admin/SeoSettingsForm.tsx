@@ -27,6 +27,9 @@ import {
   Type,
   Layout,
   Check,
+  Upload,
+  Loader2,
+  X,
 } from "lucide-react";
 import { toast } from "sonner";
 
@@ -86,7 +89,50 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
   });
 
   const [isPending, startTransition] = useTransition();
+  const [isUploadingFavicon, setIsUploadingFavicon] = useState(false);
+  const [isUploadingLogo, setIsUploadingLogo] = useState(false);
+  const [isUploadingOgImage, setIsUploadingOgImage] = useState(false);
   const router = useRouter();
+
+  const handleFileUpload = async (
+    file: File,
+    field: "faviconUrl" | "logoUrl" | "ogImageUrl"
+  ) => {
+    if (field === "faviconUrl") setIsUploadingFavicon(true);
+    else if (field === "logoUrl") setIsUploadingLogo(true);
+    else setIsUploadingOgImage(true);
+
+    try {
+      const formData = new FormData();
+      formData.append("file", file);
+
+      const res = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.error || "Error al subir el archivo");
+        return;
+      }
+
+      setSettings((prev) => ({ ...prev, [field]: data.url }));
+      toast.success(
+        field === "faviconUrl"
+          ? "Favicon subido con éxito"
+          : field === "logoUrl"
+          ? "Logotipo subido con éxito"
+          : "Imagen OG subida con éxito"
+      );
+    } catch {
+      toast.error("Error de red al subir el archivo");
+    } finally {
+      if (field === "faviconUrl") setIsUploadingFavicon(false);
+      else if (field === "logoUrl") setIsUploadingLogo(false);
+      else setIsUploadingOgImage(false);
+    }
+  };
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -359,11 +405,64 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
 
           {settings.logoMode === "image" && (
             <div className="p-5 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-[#E8E5DC]/80 dark:border-[#25221B]/80 space-y-4 animate-in fade-in duration-200">
-              <div className="space-y-2">
+              <div className="space-y-3">
                 <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 flex items-center justify-between">
-                  <span>URL del Archivo de Logotipo</span>
-                  <span className="text-[10px] text-neutral-400">SVG recomendado, PNG o WebP</span>
+                  <span>Logotipo del Sitio (Imagen)</span>
+                  <span className="text-[10px] text-neutral-400">SVG, PNG o WebP</span>
                 </label>
+
+                <div className="flex items-center gap-3">
+                  {/* Preview */}
+                  <div className="h-11 px-3 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 min-w-[44px] shadow-2xs">
+                    {settings.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={settings.logoUrl}
+                        alt="Logo Preview"
+                        className="h-7 max-w-[120px] object-contain"
+                      />
+                    ) : (
+                      <ImageIcon className="w-5 h-5 text-neutral-400" />
+                    )}
+                  </div>
+
+                  {/* Upload button */}
+                  <label className="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold bg-[#E4572E]/10 hover:bg-[#E4572E]/15 text-[#E4572E] border border-[#E4572E]/25 transition-all cursor-pointer shrink-0 shadow-2xs">
+                    {isUploadingLogo ? (
+                      <>
+                        <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                        <span>Subiendo...</span>
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-3.5 h-3.5" />
+                        <span>Subir Logotipo</span>
+                      </>
+                    )}
+                    <input
+                      type="file"
+                      accept=".svg,.png,.webp,.jpg,.jpeg,image/*"
+                      disabled={isUploadingLogo}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleFileUpload(file, "logoUrl");
+                      }}
+                      className="hidden"
+                    />
+                  </label>
+
+                  {settings.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => setSettings({ ...settings, logoUrl: "" })}
+                      className="p-2 rounded-xl text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                      title="Quitar Logo"
+                    >
+                      <X className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
+
                 <input
                   type="text"
                   value={settings.logoUrl || ""}
@@ -527,33 +626,145 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
 
           {/* Favicon & OG Image URLs */}
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
-            {/* Favicon URL */}
-            <div className="space-y-2">
+            {/* Favicon Uploader & URL */}
+            <div className="space-y-3 p-4 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/30 border border-[#E8E5DC]/80 dark:border-[#25221B]/80">
               <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 flex items-center justify-between">
-                <span>URL del Favicon</span>
-                <span className="text-[10px] text-neutral-400">ICO o PNG (32x32)</span>
+                <span className="flex items-center gap-1.5 font-bold">
+                  <Sparkles className="w-3.5 h-3.5 text-[#E4572E]" />
+                  Favicon del Sitio
+                </span>
+                <span className="text-[10px] text-neutral-400">ICO, PNG o SVG</span>
               </label>
+
+              <div className="flex items-center gap-3">
+                {/* Preview del Favicon */}
+                <div className="w-11 h-11 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                  {settings.faviconUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={settings.faviconUrl}
+                      alt="Favicon preview"
+                      className="w-6 h-6 object-contain"
+                    />
+                  ) : (
+                    <Globe className="w-5 h-5 text-neutral-400" />
+                  )}
+                </div>
+
+                {/* Botón de subida */}
+                <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#E4572E]/10 hover:bg-[#E4572E]/15 text-[#E4572E] border border-[#E4572E]/25 transition-all cursor-pointer shrink-0 shadow-2xs">
+                  {isUploadingFavicon ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Subiendo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Subir Favicon</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept=".ico,.png,.svg,.webp,image/x-icon,image/vnd.microsoft.icon,image/png,image/svg+xml"
+                    disabled={isUploadingFavicon}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, "faviconUrl");
+                    }}
+                    className="hidden"
+                  />
+                </label>
+
+                {settings.faviconUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setSettings({ ...settings, faviconUrl: "" })}
+                    className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                    title="Quitar Favicon"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
               <input
                 type="text"
                 value={settings.faviconUrl || ""}
                 onChange={(e) => setSettings({ ...settings, faviconUrl: e.target.value })}
-                placeholder="/favicon.ico o https://..."
-                className="w-full px-3.5 py-2 text-xs font-mono bg-neutral-50 dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
+                placeholder="/favicon.ico o https://tusitio.com/favicon.ico"
+                className="w-full px-3.5 py-2 text-xs font-mono bg-white dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
               />
             </div>
 
-            {/* OG Image URL */}
-            <div className="space-y-2">
+            {/* OG Image Uploader & URL */}
+            <div className="space-y-3 p-4 rounded-2xl bg-neutral-50/50 dark:bg-neutral-900/30 border border-[#E8E5DC]/80 dark:border-[#25221B]/80">
               <label className="text-xs font-semibold text-neutral-700 dark:text-neutral-300 flex items-center justify-between">
-                <span>URL Imagen Compartir (OG)</span>
+                <span className="flex items-center gap-1.5 font-bold">
+                  <Share2 className="w-3.5 h-3.5 text-[#E4572E]" />
+                  Imagen Compartir (OG)
+                </span>
                 <span className="text-[10px] text-neutral-400">1200 x 630 px</span>
               </label>
+
+              <div className="flex items-center gap-3">
+                {/* Preview de OG */}
+                <div className="h-11 w-16 rounded-xl bg-white dark:bg-neutral-900 border border-[#E8E5DC] dark:border-[#25221B] flex items-center justify-center shrink-0 overflow-hidden shadow-2xs">
+                  {settings.ogImageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={settings.ogImageUrl}
+                      alt="OG preview"
+                      className="w-full h-full object-cover"
+                    />
+                  ) : (
+                    <ImageIcon className="w-5 h-5 text-neutral-400" />
+                  )}
+                </div>
+
+                {/* Botón de subida */}
+                <label className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs font-bold bg-[#E4572E]/10 hover:bg-[#E4572E]/15 text-[#E4572E] border border-[#E4572E]/25 transition-all cursor-pointer shrink-0 shadow-2xs">
+                  {isUploadingOgImage ? (
+                    <>
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Subiendo...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Upload className="w-3.5 h-3.5" />
+                      <span>Subir Imagen OG</span>
+                    </>
+                  )}
+                  <input
+                    type="file"
+                    accept=".jpg,.jpeg,.png,.webp,image/*"
+                    disabled={isUploadingOgImage}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleFileUpload(file, "ogImageUrl");
+                    }}
+                    className="hidden"
+                  />
+                </label>
+
+                {settings.ogImageUrl && (
+                  <button
+                    type="button"
+                    onClick={() => setSettings({ ...settings, ogImageUrl: "" })}
+                    className="p-1.5 rounded-lg text-neutral-400 hover:text-red-500 hover:bg-red-50 dark:hover:bg-red-950/20 transition-colors cursor-pointer"
+                    title="Quitar Imagen OG"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                )}
+              </div>
+
               <input
                 type="text"
                 value={settings.ogImageUrl || ""}
                 onChange={(e) => setSettings({ ...settings, ogImageUrl: e.target.value })}
-                placeholder="/og-image.jpg o https://..."
-                className="w-full px-3.5 py-2 text-xs font-mono bg-neutral-50 dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
+                placeholder="/og-image.jpg o https://tusitio.com/og.jpg"
+                className="w-full px-3.5 py-2 text-xs font-mono bg-white dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
               />
             </div>
           </div>

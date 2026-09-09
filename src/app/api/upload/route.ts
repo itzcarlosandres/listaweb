@@ -4,7 +4,20 @@ import { createId } from "@paralleldrive/cuid2";
 import fs from "fs/promises";
 import path from "path";
 
-const ALLOWED_MIME_TYPES = ["image/jpeg", "image/png", "image/webp", "image/svg+xml"];
+const ALLOWED_MIME_TYPES = [
+  "image/jpeg",
+  "image/png",
+  "image/webp",
+  "image/svg+xml",
+  "image/x-icon",
+  "image/vnd.microsoft.icon",
+  "image/ico",
+  "image/icon",
+  "text/ico",
+  "application/ico",
+  "image/gif",
+];
+const ALLOWED_EXTENSIONS = ["jpg", "jpeg", "png", "webp", "svg", "ico", "gif"];
 const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
 
 export async function POST(request: Request) {
@@ -21,9 +34,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "No se proporcionó ningún archivo" }, { status: 400 });
     }
 
-    if (!ALLOWED_MIME_TYPES.includes(file.type)) {
+    const extension = (file.name.split(".").pop() || "png").toLowerCase();
+    const isMimeAllowed = ALLOWED_MIME_TYPES.includes(file.type);
+    const isExtensionAllowed = ALLOWED_EXTENSIONS.includes(extension);
+
+    if (!isMimeAllowed && !isExtensionAllowed) {
       return NextResponse.json(
-        { error: "Formato no permitido. Solo imágenes JPG, PNG, WEBP o SVG." },
+        { error: "Formato no permitido. Solo imágenes JPG, PNG, WEBP, SVG o ICO." },
         { status: 400 }
       );
     }
@@ -36,7 +53,6 @@ export async function POST(request: Request) {
     }
 
     const buffer = Buffer.from(await file.arrayBuffer());
-    const extension = file.name.split(".").pop() || "png";
     const filename = `${createId()}.${extension}`;
 
     // Guardar en public/uploads local
