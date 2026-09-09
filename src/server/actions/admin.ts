@@ -969,13 +969,27 @@ export async function uploadBrandAsset(formData: FormData): Promise<{
 
     const publicUrl = `/uploads/${filename}`;
 
-    // Si es un favicon, sincronizarlo inmediatamente con public/favicon.ico
+    // Si es un favicon, sincronizarlo inmediatamente con public/favicon.ico y base de datos
     if (isFavicon) {
       try {
         const publicFaviconPath = path.join(process.cwd(), "public", "favicon.ico");
         await fs.writeFile(publicFaviconPath, buffer);
       } catch (err) {
         console.warn("No se pudo sobrescribir public/favicon.ico:", err);
+      }
+
+      try {
+        await db.systemSetting.upsert({
+          where: { key: "SITE_FAVICON_URL" },
+          update: { value: publicUrl },
+          create: { key: "SITE_FAVICON_URL", value: publicUrl, description: "Configuración SEO y Marca: SITE_FAVICON_URL" },
+        });
+        revalidatePath("/", "layout");
+        revalidatePath("/(marketing)", "layout");
+        revalidatePath("/admin", "layout");
+        revalidatePath("/admin/settings");
+      } catch (err) {
+        console.warn("No se pudo guardar SITE_FAVICON_URL en BD:", err);
       }
     }
 

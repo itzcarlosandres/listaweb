@@ -105,18 +105,21 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
     file: File,
     field: "faviconUrl" | "logoUrl" | "ogImageUrl"
   ) => {
-    // Generar vista previa instantánea en el cliente
-    const localUrl = URL.createObjectURL(file);
-    if (field === "faviconUrl") {
-      setFaviconPreview(localUrl);
-      setIsUploadingFavicon(true);
-    } else if (field === "logoUrl") {
-      setLogoPreview(localUrl);
-      setIsUploadingLogo(true);
-    } else {
-      setOgPreview(localUrl);
-      setIsUploadingOgImage(true);
-    }
+    // 1. Generar vista previa local inmediata con DataURL (infalible, sin depender de red)
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      const dataUrl = e.target?.result as string;
+      if (dataUrl) {
+        if (field === "faviconUrl") setFaviconPreview(dataUrl);
+        else if (field === "logoUrl") setLogoPreview(dataUrl);
+        else setOgPreview(dataUrl);
+      }
+    };
+    reader.readAsDataURL(file);
+
+    if (field === "faviconUrl") setIsUploadingFavicon(true);
+    else if (field === "logoUrl") setIsUploadingLogo(true);
+    else setIsUploadingOgImage(true);
 
     try {
       const formData = new FormData();
@@ -125,26 +128,59 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
         formData.append("isFavicon", "true");
       }
 
-      const res = await uploadBrandAsset(formData);
+      let uploadedUrl: string | undefined;
 
-      if (!res.success || !res.url) {
-        toast.error(res.error || "Error al subir el archivo");
-        if (field === "faviconUrl") setFaviconPreview(null);
-        else if (field === "logoUrl") setLogoPreview(null);
-        else setOgPreview(null);
-        return;
+      // Intentar primero con Server Action
+      try {
+        const res = await uploadBrandAsset(formData);
+        if (res.success && res.url) {
+          uploadedUrl = res.url;
+        }
+      } catch (saErr) {
+        console.warn("Server action upload failed, attempting API route fallback:", saErr);
       }
 
-      setSettings((prev) => ({ ...prev, [field]: res.url }));
+      // Si no devolvió URL, fallback a API route
+      if (!uploadedUrl) {
+        const resApi = await fetch("/api/upload", {
+          method: "POST",
+          body: formData,
+        });
+        const dataApi = await resApi.json();
+        if (!resApi.ok || !dataApi.url) {
+          throw new Error(dataApi.error || "Error al subir el archivo");
+        }
+        uploadedUrl = dataApi.url;
+      }
+
+      setSettings((prev) => ({ ...prev, [field]: uploadedUrl! }));
+
+      // Si es favicon, actualizar dinámicamente la pestaña del navegador de inmediato
+      if (field === "faviconUrl") {
+        const cacheBuster = `${uploadedUrl}?v=${Date.now()}`;
+        const links = document.querySelectorAll<HTMLLinkElement>("link[rel*='icon']");
+        if (links.length > 0) {
+          links.forEach((l) => {
+            l.href = cacheBuster;
+          });
+        } else {
+          const newLink = document.createElement("link");
+          newLink.rel = "icon";
+          newLink.href = cacheBuster;
+          document.head.appendChild(newLink);
+        }
+      }
+
       toast.success(
         field === "faviconUrl"
-          ? "Favicon subido y actualizado correctamente"
+          ? "¡Favicon guardado y actualizado con éxito!"
           : field === "logoUrl"
           ? "Logotipo subido correctamente"
           : "Imagen OG subida correctamente"
       );
-    } catch {
-      toast.error("Error al procesar la subida del archivo");
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : "Error al procesar la subida del archivo";
+      toast.error(msg);
       if (field === "faviconUrl") setFaviconPreview(null);
       else if (field === "logoUrl") setLogoPreview(null);
       else setOgPreview(null);
@@ -671,7 +707,6 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                       src={faviconPreview || settings.faviconUrl}
                       alt="Favicon preview"
                       className="w-6 h-6 object-contain"
-                      onError={() => setFaviconPreview(null)}
                     />
                   ) : (
                     <Globe className="w-5 h-5 text-neutral-400" />
