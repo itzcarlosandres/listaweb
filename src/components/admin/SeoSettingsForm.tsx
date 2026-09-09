@@ -90,6 +90,8 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
     googleAnalyticsId: initialSettings?.googleAnalyticsId || "",
     googleSiteVerification: initialSettings?.googleSiteVerification || "",
     allowIndexing: initialSettings?.allowIndexing ?? true,
+    customHeadCode: initialSettings?.customHeadCode || "",
+    customBodyCode: initialSettings?.customBodyCode || "",
   });
 
   const [isPending, startTransition] = useTransition();
@@ -1117,6 +1119,149 @@ export function SeoSettingsForm({ initialSettings }: SeoSettingsFormProps) {
                 onChange={(e) => setSettings({ ...settings, googleSiteVerification: e.target.value })}
                 placeholder="google-site-verification=..."
                 className="w-full px-3.5 py-2 text-xs font-mono bg-neutral-50 dark:bg-neutral-900/80 border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-white"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 5: Inyección de Código Personalizado (Head & Body) */}
+        <div className="space-y-4 pt-4 border-t border-[#E8E5DC]/60 dark:border-[#25221B]/60">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div className="flex items-center gap-2 text-xs font-bold font-heading uppercase tracking-wider text-neutral-900 dark:text-white">
+              <Code className="w-4 h-4 text-[#E4572E]" />
+              <span>4. Inyección de Código Personalizado (&lt;head&gt; y &lt;body&gt;)</span>
+            </div>
+            <span className="text-[10px] font-mono px-2.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium w-fit">
+              Google Search Console, GTM, Meta Pixel, Scripts
+            </span>
+          </div>
+
+          <p className="text-xs text-neutral-500">
+            Inserta directamente etiquetas HTML completas de verificación o analítica (Google Search Console, Google Tag Manager, Facebook Pixel, Bing Webmaster o widgets de chat). Se inyectan en todo el sitio web de forma segura.
+          </p>
+
+          <div className="space-y-4">
+            {/* Custom Head Code */}
+            <div className="space-y-2.5 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-[#E8E5DC]/80 dark:border-[#25221B]/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <label className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-1.5">
+                    <span>Código HTML para la etiqueta &lt;head&gt;</span>
+                    <span className="text-[10px] font-normal text-neutral-400 font-mono">(&lt;meta&gt;, &lt;script&gt;, &lt;link&gt;, &lt;style&gt;)</span>
+                  </label>
+                  <p className="text-[11px] text-neutral-500">
+                    Se renderiza en el encabezado de todas las páginas (Google Search Console, GTM, estilos, fuentes).
+                  </p>
+                </div>
+
+                {/* Quick Templates */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] text-neutral-400 font-medium mr-1">Plantillas rápidas:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const snippet = '<meta name="google-site-verification" content="TU_CODIGO_AQUI" />';
+                      if (!settings.customHeadCode?.includes("google-site-verification")) {
+                        setSettings((prev) => ({
+                          ...prev,
+                          customHeadCode: (prev.customHeadCode ? prev.customHeadCode.trim() + "\n" : "") + snippet,
+                        }));
+                        toast.info("Etiqueta Google Search Console añadida al editor");
+                      } else {
+                        toast.warning("Ya existe una etiqueta de Google Search Console");
+                      }
+                    }}
+                    className="px-2.5 py-1 text-[10px] font-medium rounded-lg bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border border-[#E8E5DC] dark:border-[#25221B] transition-colors cursor-pointer"
+                  >
+                    + Google Search Console
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const snippet = `<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n})(window,document,'script','dataLayer','GTM-XXXXXX');</script>\n<!-- End Google Tag Manager -->`;
+                      if (!settings.customHeadCode?.includes("googletagmanager")) {
+                        setSettings((prev) => ({
+                          ...prev,
+                          customHeadCode: (prev.customHeadCode ? prev.customHeadCode.trim() + "\n\n" : "") + snippet,
+                        }));
+                        toast.info("Script Google Tag Manager añadido");
+                      }
+                    }}
+                    className="px-2.5 py-1 text-[10px] font-medium rounded-lg bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border border-[#E8E5DC] dark:border-[#25221B] transition-colors cursor-pointer"
+                  >
+                    + GTM Head
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const snippet = `<meta name="msvalidate.01" content="TU_CODIGO_BING" />`;
+                      if (!settings.customHeadCode?.includes("msvalidate.01")) {
+                        setSettings((prev) => ({
+                          ...prev,
+                          customHeadCode: (prev.customHeadCode ? prev.customHeadCode.trim() + "\n" : "") + snippet,
+                        }));
+                        toast.info("Etiqueta Bing Webmaster añadida");
+                      }
+                    }}
+                    className="px-2.5 py-1 text-[10px] font-medium rounded-lg bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border border-[#E8E5DC] dark:border-[#25221B] transition-colors cursor-pointer"
+                  >
+                    + Bing
+                  </button>
+                </div>
+              </div>
+
+              <textarea
+                rows={5}
+                value={settings.customHeadCode || ""}
+                onChange={(e) => setSettings({ ...settings, customHeadCode: e.target.value })}
+                placeholder={`<!-- Ejemplo: Google Search Console -->\n<meta name="google-site-verification" content="abcdef1234567890" />\n\n<!-- O script de seguimiento -->\n<script async src="https://example.com/analytics.js"></script>`}
+                className="w-full p-3 text-xs font-mono bg-white dark:bg-[#12110D] border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 leading-relaxed"
+                spellCheck={false}
+              />
+            </div>
+
+            {/* Custom Body Code */}
+            <div className="space-y-2.5 p-4 rounded-2xl bg-neutral-50 dark:bg-neutral-900/50 border border-[#E8E5DC]/80 dark:border-[#25221B]/80">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+                <div>
+                  <label className="text-xs font-bold text-neutral-900 dark:text-white flex items-center gap-1.5">
+                    <span>Código HTML para el final de &lt;body&gt;</span>
+                    <span className="text-[10px] font-normal text-neutral-400 font-mono">(Widgets, Chat, &lt;noscript&gt;, Scripts tardíos)</span>
+                  </label>
+                  <p className="text-[11px] text-neutral-500">
+                    Se inyecta justo antes del cierre de &lt;/body&gt; en el pie de página.
+                  </p>
+                </div>
+
+                {/* Quick Templates */}
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="text-[10px] text-neutral-400 font-medium mr-1">Plantillas rápidas:</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      const snippet = `<!-- Google Tag Manager (noscript) -->\n<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-XXXXXX"\nheight="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n<!-- End Google Tag Manager (noscript) -->`;
+                      if (!settings.customBodyCode?.includes("googletagmanager")) {
+                        setSettings((prev) => ({
+                          ...prev,
+                          customBodyCode: (prev.customBodyCode ? prev.customBodyCode.trim() + "\n\n" : "") + snippet,
+                        }));
+                        toast.info("Snippet GTM (noscript) añadido");
+                      }
+                    }}
+                    className="px-2.5 py-1 text-[10px] font-medium rounded-lg bg-white dark:bg-neutral-800 hover:bg-neutral-100 dark:hover:bg-neutral-700 text-neutral-700 dark:text-neutral-300 border border-[#E8E5DC] dark:border-[#25221B] transition-colors cursor-pointer"
+                  >
+                    + GTM Noscript
+                  </button>
+                </div>
+              </div>
+
+              <textarea
+                rows={4}
+                value={settings.customBodyCode || ""}
+                onChange={(e) => setSettings({ ...settings, customBodyCode: e.target.value })}
+                placeholder={`<!-- Ejemplo: Chat en vivo o widget de pie de página -->\n<script src="//code.tidio.co/xxxx.js" async></script>`}
+                className="w-full p-3 text-xs font-mono bg-white dark:bg-[#12110D] border border-[#E8E5DC] dark:border-[#25221B] rounded-xl focus:outline-none focus:border-[#E4572E] text-neutral-900 dark:text-neutral-200 placeholder:text-neutral-400 dark:placeholder:text-neutral-600 leading-relaxed"
+                spellCheck={false}
               />
             </div>
           </div>

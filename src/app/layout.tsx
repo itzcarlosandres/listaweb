@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Bricolage_Grotesque, Instrument_Sans, JetBrains_Mono } from "next/font/google";
 import { Providers } from "@/components/shared/Providers";
 import { getGeneralSeoSettings } from "@/server/actions/admin";
+import { CustomHeadCode, CustomBodyCode } from "@/components/shared/CustomHeadCode";
 import Script from "next/script";
 import "./globals.css";
 
@@ -23,6 +24,14 @@ const jetbrains = JetBrains_Mono({
   display: "swap",
 });
 
+function extractGoogleToken(input?: string): string | undefined {
+  if (!input) return undefined;
+  const match = input.match(/content=["']([^"']+)["']/i);
+  if (match) return match[1].trim();
+  const cleaned = input.replace(/^google-site-verification\s*[:=]\s*/i, "").trim();
+  return cleaned || undefined;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const seo = await getGeneralSeoSettings();
 
@@ -41,6 +50,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const keywords = seo.metaKeywords
     ? seo.metaKeywords.split(",").map((k) => k.trim()).filter(Boolean)
     : ["startups", "saas", "proyectos", "product hunt", "lanzamientos", "herramientas ia", "open source"];
+
+  const googleToken = extractGoogleToken(seo.googleSiteVerification);
 
   return {
     title: {
@@ -71,9 +82,9 @@ export async function generateMetadata(): Promise<Metadata> {
       creator: seo.twitterHandle || "@launchhub",
       images: seo.ogImageUrl ? [seo.ogImageUrl] : [],
     },
-    verification: seo.googleSiteVerification
+    verification: googleToken
       ? {
-          google: seo.googleSiteVerification,
+          google: googleToken,
         }
       : undefined,
     robots: {
@@ -103,6 +114,7 @@ export default async function RootLayout({
         <link rel="icon" href={faviconHref} sizes="any" />
         <link rel="shortcut icon" href={faviconHref} />
         <link rel="apple-touch-icon" href={faviconHref} />
+        <CustomHeadCode code={seo.customHeadCode} />
       </head>
       <body className="min-h-full flex flex-col bg-[#FAF9F6] dark:bg-[#12110D] text-[#17150F] dark:text-[#FAF9F6]">
         <Providers>{children}</Providers>
@@ -123,6 +135,8 @@ export default async function RootLayout({
             </Script>
           </>
         )}
+
+        <CustomBodyCode code={seo.customBodyCode} />
       </body>
     </html>
   );

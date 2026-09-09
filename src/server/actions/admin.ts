@@ -656,6 +656,8 @@ export interface GeneralSeoSettingsInput {
   googleAnalyticsId: string;
   googleSiteVerification: string;
   allowIndexing: boolean;
+  customHeadCode?: string;
+  customBodyCode?: string;
 }
 
 export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> {
@@ -682,6 +684,8 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
             "SEO_GOOGLE_ANALYTICS_ID",
             "SEO_GOOGLE_SITE_VERIFICATION",
             "SEO_ALLOW_INDEXING",
+            "SEO_CUSTOM_HEAD_CODE",
+            "SEO_CUSTOM_BODY_CODE",
           ],
         },
       },
@@ -726,6 +730,8 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
       googleAnalyticsId: map.get("SEO_GOOGLE_ANALYTICS_ID") || "",
       googleSiteVerification: map.get("SEO_GOOGLE_SITE_VERIFICATION") || "",
       allowIndexing: (map.get("SEO_ALLOW_INDEXING") ?? "true") === "true",
+      customHeadCode: map.get("SEO_CUSTOM_HEAD_CODE") || "",
+      customBodyCode: map.get("SEO_CUSTOM_BODY_CODE") || "",
     };
   } catch (error) {
     console.error("Error getting general SEO settings:", error);
@@ -751,6 +757,8 @@ export async function getGeneralSeoSettings(): Promise<GeneralSeoSettingsInput> 
       googleAnalyticsId: "",
       googleSiteVerification: "",
       allowIndexing: true,
+      customHeadCode: "",
+      customBodyCode: "",
     };
   }
 }
@@ -780,6 +788,8 @@ export async function updateGeneralSeoSettings(
       ["SEO_GOOGLE_ANALYTICS_ID", (input.googleAnalyticsId ?? "").trim()],
       ["SEO_GOOGLE_SITE_VERIFICATION", (input.googleSiteVerification ?? "").trim()],
       ["SEO_ALLOW_INDEXING", input.allowIndexing ? "true" : "false"],
+      ["SEO_CUSTOM_HEAD_CODE", (input.customHeadCode ?? "").trim()],
+      ["SEO_CUSTOM_BODY_CODE", (input.customBodyCode ?? "").trim()],
     ];
 
     await db.$transaction(async (tx) => {
